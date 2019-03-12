@@ -1,0 +1,40 @@
+Events:
+Arrival:		[time of arrival, size of the group, dinner duration (d)];
+Queue Abandonment:	
+Dinner Duration (d):	40+exp(20)<=120
+
+Indicators:
+*Abandonments/arrivals
+*Profit=Income-Costs
+Waiting times
+Shared tables
+Utilization seats = busy seats / total seats
+Utilization tables = busy tables / total tables
+unoccupied seats in busy tables
+
+r=rand();
+
+if r<5/15
+group of size 5
+elseif r<9/15
+group of size 4
+.
+.
+.
+
+duration=min([40/60-log(1-rand())/lambda, 2]);
+
+Variables:
+Time
+Queue size
+Queue members (IDs)
+Customers (class: customerID, time_arrival, group_size, dinner_duration, time_seat, revenue)
+Tables (class: tableID, table_size, busy_seats, assigned_group)
+abandonments
+
+Measurements:
+Time-based:
+	utilizations
+Event-based:
+	Waiting times
+
