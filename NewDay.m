@@ -15,6 +15,7 @@ function scenario = NewDay()
 % .arrival          5 x 3 matrix that contains arrival rates 
 % .dmin             Minimum dinner duration
 % .dmax             Maximum dinner duration
+% .dmean            Mean dinner duration
 % .consum_min       Minimum consumption rate
 % .consum_max       Maximum consumption rate
 % .Tmax             Business closing time
@@ -30,7 +31,8 @@ scenario.arrival = [1, 8 ,3;
                     4, 9, 13;
                     5, 7 ,14];
 scenario.dmin = 2/3;            % 40 minutes in hours
-scenario.dmax = 2;
+scenario.dmax = 2;              % 2 hours
+scenario.dmean = 1/3;           % 20 minutes in hours
 scenario.consum_min = 0.5;      % in EUR/minute
 scenario.consum_max = 1.2;      % in EUR/minute
 scenario.Tmax = 3;

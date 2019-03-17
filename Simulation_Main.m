@@ -1,4 +1,3 @@
-%% PART I: SIMULATION
 %% Set the Scenario
 scenario = NewDay();
         
@@ -30,3 +29,7 @@ ylabel('Frequency [-] number of arrivals');
 figure; histogram(allArrivals.groupsize, 'BinWidth', 0.1, 'FaceAlpha', 0.3, 'Facecolor', 'k'); 
 xlabel('Groups size inside the Poisson process period');
 ylabel('Frequency [-] number of arrivals');
+
+%% Dinner Duration
+r = rand();
+d = min(2, scenario.dmin - log(1 - r)*scenario.dmean);
