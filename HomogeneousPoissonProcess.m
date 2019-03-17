@@ -4,33 +4,34 @@ function arrivalinfo = HomogeneousPoissonProcess(T, arrival)
 % ============================================================================
 % DESCRIPTION
 %
-% usage: times = HomogeneousPoissonProcess(lambda, duration)
+% usage: times = HomogeneousPoissonProcess(T, arrival)
 %
-% Generates a row vector of event times for a homogenous Poisson process
-% with rate lambda and given duration.
+% Homogeneous Poisson process for customer arrival times.
 %
 % ----------------------------------------------------------------------------
 % PARAMETERS
 %
-% lambda    the rate of the Poisson process
-% T         the duration of the Poisson process
+% T         Index for the current time block i.e. T = {1, 2, 3}
+%
+% arrival   5 x 3 matrix of customer arrival rates
 %
 % ---------------------------------------------------------------------------
 % RETURN VALUES
 %
-% arrivalinfo(:,1) = times     a row vector of event times
-% arrivalinfo(:,2) = group size
+% arrivalinfo.times          a vector of event times
+% arrivalinfo.groupsize      a vector of corresponding group size
 %
 % ============================================================================
 
-% Step 1: initialize t, k
+% Step 1: initialize t and output matrix
 t = T-1;
-arrivalinfo = [];
+arrivalinfo.times = [];
+arrivalinfo.groupsize = [];
 
-% Obtain arrival rate
+% Step 2: obtain the right arrival rate based on current time block
 rate = lambda(arrival, t);
 
-% Step 2: Simulate until t > T
+% Step 3: simulate arrival times until t > T
 while t <= T
     % Generate inter-arrival time
     r = rand();
@@ -49,7 +50,9 @@ while t <= T
     if t > T 
         break
     end
-    arrivalinfo = [arrivalinfo; t, group_size];
+    
+    arrivalinfo.times = [arrivalinfo.times, t];
+    arrivalinfo.groupsize = [arrivalinfo.groupsize, group_size];
 end
 
 
