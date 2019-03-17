@@ -1,8 +1,8 @@
 %% Set the Scenario
 scenario = NewDay();
+Draws = 1000;
         
 %% Customer Arrival Process
-Draws = 1000;
 allArrivals.times = [];
 allArrivals.groupsize = [];
 for count = 1:Draws   % For all draws
@@ -31,5 +31,14 @@ xlabel('Groups size inside the Poisson process period');
 ylabel('Frequency [-] number of arrivals');
 
 %% Dinner Duration
-r = rand();
-d = min(2, scenario.dmin - log(1 - r)*scenario.dmean);
+durations = [];
+for count = 1:Draws
+    r = rand();
+    d = min(scenario.dmax, scenario.dmin - log(1 - r)*scenario.dmean);
+    durations = [durations, d];
+end
+figure; histogram(durations, 'BinWidth', 0.1, 'FaceAlpha', 0.3, 'Facecolor', 'k');
+xlabel('Dinner duration times');
+ylabel('Frequency');
+
+%% 
