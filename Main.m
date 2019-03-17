@@ -10,7 +10,7 @@ for count = 1:Draws   % For all draws
     arrivalinfo.times = []; 
     arrivalinfo.groupsize = [];
     for T = 1:3       % For each draw
-        process = HomogeneousPoissonProcess(T, arrival);
+        process = HomogeneousPoissonProcess(T, scenario.arrival);
         arrivalinfo.times = [arrivalinfo.times, process.times];
         arrivalinfo.groupsize = [arrivalinfo.groupsize, process.groupsize];
     end
