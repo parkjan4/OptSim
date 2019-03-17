@@ -4,7 +4,7 @@ function rate = lambda(arrival, time)
 % 
 % usage: rate = lambda(arrival, time)
 %
-% Generates the customer arrival rate which depends on 'time'
+% Generates the customer arrival rate which depends on "time"
 %
 % ----------------------------------------------------------------------------
 % PARAMETERS

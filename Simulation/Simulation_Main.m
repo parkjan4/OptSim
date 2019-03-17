@@ -1,4 +1,4 @@
-%% Test the implementation of QueueingSimulation1.m function
+%% Test the implementation of DiscreteEventSimulation.m function
 
 %% clean the workspace
 clear all; %Removes all variables, functions, and MEX-files from memory, leaving the workspace empty
@@ -7,10 +7,10 @@ clc; % clear command window
 
 %% Program
 % Set the scenario
-scenario = NewRoad1();
+scenario = NewDay();
 
 % Run the simulation
-[times, queues] = QueueingSimulation1(scenario);
+[times, queues] = DiscreteEventSimulation(scenario);
 
 % Graphical animation of the results
 DrawNetwork(scenario, times, queues);

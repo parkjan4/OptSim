@@ -1,9 +1,9 @@
-function [times, queues] = QueueingSimulation1(scenario)
+function [times, queues] = DiscreteEventSimulation(scenario)
 
 % ============================================================================
 % DESCRIPTION
 %
-% usage: [times, queues] = QueueingSimulation1_mod(scenario)
+% usage: [times, queues] = DiscreteEventSimulation(scenario)
 %
 % Runs a simulation of "scenario".
 %
@@ -11,11 +11,15 @@ function [times, queues] = QueueingSimulation1(scenario)
 % PARAMETERS
 %
 % scenario
-% .DEMAND_DURATION  length of the demand interval (how long vehicles enter)
-% .T0               1 x 1 matrix that contains the free flow travel time
-% .LAMBDA           1 x 1 matrix that contains the external entry rate
-% .MU               1 x 1 matrix that contains the road service rate
-% .JOBLENGTH        length of a single vehicle
+% .arrival          5 x 3 matrix that contains arrival rates 
+% .dmin             Minimum dinner duration
+% .dmax             Maximum dinner duration
+% .dmean            Mean dinner duration
+% .consum_min       Minimum consumption rate
+% .consum_max       Maximum consumption rate
+% .Tmax             Business closing time
+% .arrangement      5 x 1 matrix that contains number of tables for each type
+% .seating          Seating policy
 %
 % ---------------------------------------------------------------------------
 % RETURN VALUES
@@ -25,7 +29,7 @@ function [times, queues] = QueueingSimulation1(scenario)
 %
 % ---------------------------------------------------------------------------
 
-% Step 1: First event (generation)
+% Step 1: Generate the first event (Customer Arrival)
 event = NewEvent(Exponential(scenario.LAMBDA), 1);
 EventList = UpdatedEventList([], event);
 T = scenario.DEMAND_DURATION;

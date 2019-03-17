@@ -1,0 +1,40 @@
+Notes by John:
+*For now, code without considering queue abandonment
+
+Seating Policy:
+*Different queues for different group sizes
+- Always look for empty tables first and assign group to that table.
+- If none, assign group to a table with lower number of customers already sitting.
+- If none, put in the (appropriate) queue.
+
+1. Finish DiscreteEventSimulation.m
+- Read in scenario.arrival and pre-sum the columns beforehand for arrival rates.
+- Read in scenario.arrangements
+- Create a full "Tables" class with scenario.arrangements (this will be updated throughout)
+	- {tableID: int (1,2,3...), table_size:int, num_busy_seats:int, assigned_customer:this is a list}
+- Create an empty "Customers" class
+- Generate Arrival -- first event is by default Arrival
+- Event trigger relationships:
+	Event Type | Triggered Event |
+	------------------------------
+	Arrival    | 1. Arrival (abort if t_sampled > T)
+		   | 2. If (we can find a table for the group (see Seating Policy)): 
+		   | 		Update "Tables"
+		   |		Define "Shared" = true if "assigned_group" contains more than one element; else "Shared"=false
+		   |		Generate Duration =  (1 - 0.5*Shared)*Duration
+		   |		Update "Customers" {customerID=last ID+1, time_arrival=Arrival, group_size, dinner_duration=Duration, time_seated=time_arrival, revenue=0}
+		   |    Else: queue = queue + 1 (appropriate queue based on group size)
+	Duration   | No event triggered, but this means one group leaves the restaurant.
+		   | 1. Extract customerID for which this Duration belongs
+		   | 2. Look up in "Tables" for this customerID
+		   | 3. Define "Shared"=true if "assigned_group" contains more than one element; else "Shared"=false
+		   | 4. Generate revenue = (1 - 0.6*Shared)*U(consum_min, consum_max)*Duration
+		   | 5. Update "Customers" "revenue" field
+		   | 6. Update "Tables" by: {tableID=constant, table_size=constant, num_busy_seats-=groupsize, assigned_group=remove customerID from list}
+	Abandonment| If queue > 0: 
+		   | 	Certain groups leave (more than one can leave) based on how much they waited
+		   | Else:
+		   | 	Nothing happens
+	End	   | End
+		   
+	

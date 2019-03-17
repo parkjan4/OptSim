@@ -1,8 +1,8 @@
 %% Set the Scenario
 scenario = NewDay();
-Draws = 1000;
+Draws = 1;
         
-%% Customer Arrival Process
+%% Customer Arrival Process & Visualization
 allArrivals.times = [];
 allArrivals.groupsize = [];
 for count = 1:Draws   % For all draws
@@ -17,7 +17,6 @@ for count = 1:Draws   % For all draws
     allArrivals.groupsize = [allArrivals.groupsize, arrivalinfo.groupsize];
 end
 
-%% Customer Arrival Visualization
 close all;
 
 % Arrival times
@@ -30,7 +29,7 @@ figure; histogram(allArrivals.groupsize, 'BinWidth', 0.1, 'FaceAlpha', 0.3, 'Fac
 xlabel('Groups size inside the Poisson process period');
 ylabel('Frequency [-] number of arrivals');
 
-%% Dinner Duration
+%% Dinner Duration & Visualization
 durations = [];
 for count = 1:Draws
     r = rand();
@@ -40,5 +39,3 @@ end
 figure; histogram(durations, 'BinWidth', 0.1, 'FaceAlpha', 0.3, 'Facecolor', 'k');
 xlabel('Dinner duration times');
 ylabel('Frequency');
-
-%% 
