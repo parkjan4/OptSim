@@ -2,7 +2,6 @@ Notes by John:
 *For now, code without considering queue abandonment
 
 Seating Policy:
-*Different queues for different group sizes
 - Always look for empty tables first and assign group to that table.
 - If none, assign group to a table with lower number of customers already sitting.
 - If none, put in the (appropriate) queue.
@@ -23,13 +22,24 @@ Seating Policy:
 		   |		Generate Duration =  (1 - 0.5*Shared)*Duration, where Shared==true if the table is shared
 		   |		Update "Customers" {customerID=last ID+1, time_arrival=Arrival, group_size, dinner_duration=Duration, time_seated=time_arrival, revenue=0}
 		   |    Else: queue = queue + 1 (appropriate queue based on group size)
-	Duration   | No event triggered, but this means one group leaves the restaurant.
+	Duration   | This means one customer leaves the restaurant:
 		   | 1. Extract customerID for which this Duration belongs
 		   | 2. Look up in "Tables" for this customerID
 		   | 3. Define "Shared"=true if "assigned_group" contains more than one element; else "Shared"=false
 		   | 4. Generate revenue = (1 - 0.6*Shared)*U(consum_min, consum_max)*Duration
 		   | 5. Update "Customers" "revenue" field
 		   | 6. Update "Tables" by: {tableID=constant, table_size=constant, num_busy_seats-=groupsize, assigned_group=remove customerID from list}
+		   |
+		   | Trigger Duration (conditional)
+		   | if queue > 0
+		   | 		If we can find a table for the next one(s) in line (see SeatingPolicy.m)
+		   | 			... (same thing as #2 above for event type "Arrival") ...
+		   | 			& 
+		   | 			queue = queue - #customers_assigned_to_table (which can be > 1)
+		   | 			Remove corresponding abandonment event in EventList using customerID
+		   | 			Remove corresponding row in abandonment_list using customerID
+		   | 		Else: 	queue remains the same
+		   | Else: 	Do nothing
 	Abandonment| If queue > 0: 
 		   | 	Certain groups leave (more than one can leave) based on how much they waited
 		   | Else:

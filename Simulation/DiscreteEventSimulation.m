@@ -49,32 +49,30 @@ end
 % First event is always "Arrival"
 [t_a, groupsize] = CustomerArrival(0, scenario.arrival);
 ID = 1;                                 % default for first customer
-event = NewEvent(t_a, 1, ID);
-EventList = UpdatedEventList([], event);
+event = NewEvent(t_a, 1, ID);           % create an event
+EventList = UpdatedEventList([], event);% update (and sort) EventList
 
-if event.time > scenario.Tmax           % Extremely rare case
+if event.time > scenario.Tmax           % extremely rare case
     return 
 end     
 
 % Initialize an array for "Customers" class objects
 customers = [];
-customer = Customers;
+customer = Customers;                   % initialize "Customers" object
 register_customer(customer, ID, event.time, groupsize);
-
-% Abandonment times
-abandonment_list = Abandonments(event.time,[],ID);
-event = NewEvent(abandonment_list(1,1), 3, ID);
-EventList = UpdatedEventList(EventList, event);
 
 % Initialize variables for measuring indicators
 times = [];
-queues = [];            % waiting line
+queues = [];     % waiting line (number of cusomters)
 num_busyseats = [];     % number of busy seats
 num_busytables = [];    % number of busytables
+q = 0;                  % queue length
+abandonment_list = [];  
 
 while ~isempty(EventList)
     NextEvent = EventList(1);
     times = [times, NextEvent.time];
+    queues = [queues, length(abandonment_list(:,2))];
     
     switch NextEvent.type
         case 1 
@@ -94,37 +92,52 @@ while ~isempty(EventList)
             register_customer(customer,ID,NextEvent.time,groupsize);
             
             %% ===== Trigger Duration ===== 
-            [tables, assigned] = SeatingPolicy(customers, tables);
+            [tables, assigned] = SeatingPolicy(customers, tables, NextEvent.ID, abandonment_list(:,2));
             
+            t_d = -1;
             if assigned == true
                 r = rand();
+                % Sample duration
                 t_d = min(scenario.dmax, scenario.dmin - log(1 - r)*scenario.dmean);
-                is_shared = tables([tables.assigned_customer]]==event.ID).shared;
-                t_d = (1 - 0.5*is_shared)*t_d;    
                 
+                % Actual dinner end time
+                is_shared = tables([tables.assigned_customer]==NextEvent.ID).shared;
+                t_d = NextEvent.time + (1 - 0.5*is_shared)*t_d;    
+                
+                % Update "Customers" object (time seated, dinner end time)
+                seating(customers([customers.customerID]==NextEvent.ID),NextEvent.time);
+                duration(customers([customers.customerID]==NextEvent.ID),t_d);
+            else              
+                % Abandonment times
+                abandonment_list = Abandonments(NextEvent.time,abandonment_list,NextEvent.ID);
+                event = NewEvent(abandonment_list(abandonment_list(:,2)==NextEvent.ID,1),3,NextEvent.ID);
+                EventList = UpdatedEventList(EventList, event);
             end
             
-            % ===== BELOW DOES NOT NEED TO BE EDITED ===== 
             event_a = NewEvent(t_a, 1);
-            event_d = NewEvent(t_d, 2);
             EventList = UpdatedEventList(EventList, event_a);
-            EventList = UpdatedEventList(EventList, event_d);
+            
+            if t_d ~= -1
+                event_d = NewEvent(t_d, 2);
+                EventList = UpdatedEventList(EventList, event_d);
+            end
+            
             EventList = EventList(2:end);
             
-        case 2 % Type: Duration
-               % Triggered event: nothing
+        case 2 
+            % Type: Duration
+            % Triggered event: Duration (conditional)
+            
+            %%
             
             
             
-        otherwise % Type: Abandonment
-                  % Triggered event: nothing
+        otherwise
+            % Type: Abandonment
+            % Triggered event: nothing
             
-            % ===== BELOW DOES NOT NEED TO BE EDITED ===== 
-            % Simulate next event
-            if q == 0
-                EventList = EventList(2:end);
-                continue
-            end
+            % Update abandonment_list (queue decreases by 1)
+            abandonment_list = abandonment_list(2:end,:);
     end
 end
 

@@ -1,12 +1,12 @@
 classdef Customers < handle
     
     properties
-        customerID
-        time_arrival
-        groupsize
-        dinner_duration
-        time_seated
-        revenue
+        customerID          % integer
+        time_arrival        % double
+        groupsize           % integer
+        dinner_duration     % double
+        time_seated         % double
+        revenue             % double
     end
     
     methods
@@ -23,12 +23,12 @@ classdef Customers < handle
         end
         
         function [] = seating(obj,time)
-            % Updates customer info when they are seated
+            % Update customer seating time
             obj.time_seated = time;
         end
         
         function [] = duration(obj,time)
-            % Updates customer dinner duration time
+            % Update customer dinner ending time
             obj.dinner_duration = time;
         end
         

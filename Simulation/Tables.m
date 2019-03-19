@@ -1,12 +1,12 @@
 classdef Tables < handle
     
     properties
-        tableID
-        tablesize
-        busyseats
-        availableseats
-        assigned_customer
-        shared
+        tableID             % integer
+        tablesize           % integer
+        busyseats           % integer
+        availableseats      % integer
+        assigned_customer   % list of integers
+        shared              % {true, false} boolean binary
     end
     
     methods
