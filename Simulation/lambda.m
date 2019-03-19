@@ -19,14 +19,6 @@ function rate = lambda(arrival, time)
 % rate      Average customer arrival rate (groups/hour by default)
 % ============================================================================
 
-if time < 1
-    rate = sum(arrival(:,1));
-elseif time < 2
-    rate = sum(arrival(:,2));
-elseif time < 3
-    rate = sum(arrival(:,3));
-else
-    rate = 0;
-end
+rate = sum(arrival(:,ceil(time)));
 
 end

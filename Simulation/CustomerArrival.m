@@ -33,7 +33,7 @@ time_arrival = t - log(1-r)/rate;
 % Determine group size (Inverse Transform Method)
 s = rand(); k=0; i=1;
 while k==0
-    if s < sum(arrival(1:i,T))/rate
+    if s < sum(arrival(1:i,ceil(t)))/rate
         k = 1;
         group_size = i;
     end
