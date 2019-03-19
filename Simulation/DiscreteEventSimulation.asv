@@ -1,4 +1,4 @@
-function [customers, tables, times, queues] = DiscreteEventSimulation(scenario)
+function [times, queues] = DiscreteEventSimulation(scenario)
 
 % ============================================================================
 % DESCRIPTION
@@ -29,6 +29,9 @@ function [customers, tables, times, queues] = DiscreteEventSimulation(scenario)
 %
 % ---------------------------------------------------------------------------
 
+% Step 1: 1 x 3 vector for arrival rates
+rates = [sum(scenario.arrival(:,1)), sum(scenario.arrival(:,2)), sum(scenario.arrival(:,3))];
+
 % Step 2: Create an array of "Tables" class objects
 tables = [];
 ID = 1;
@@ -44,34 +47,41 @@ for i = 1:length(scenario.arrangement)
     end
 end
 
-% Step 3: First event is always "Arrival"
-[t_a, groupsize] = CustomerArrival(0, scenario.arrival);
-event = NewEvent(t_a, 1);
+% Step 3: First event is always Arrival
+r = rand();
+event = NewEvent(-log(1-r)/rates(1), 1);
 EventList = UpdatedEventList([], event);
 
-if event.time > scenario.Tmax 
-    return 
-end % Extremely rare case
+if event.time > scenario.Tmax % extremely rare case
+    return
+end
 
 % Initialize an array for "Customers" class objects
 customers = [];
-customer = Customers;
-ID = 1; % default for first customer
-register_customer(customer, ID, event.time, groupsize);
 
-% Step 4: Initialize variables for measuring indicators
+
+% Step 4: Initialize indicator variables
+
+% Step X: Generate the first event (Customer Arrival)
+event = NewEvent(Exponential(scenario.LAMBDA), 1);
+EventList = UpdatedEventList([], event);
+T = scenario.DEMAND_DURATION;
+q = 0;
 times = [];
-queues = []; % waiting line
+queues = [];
+
+if event.time > T % extremely rare case
+    return
+end
 
 while ~isempty(EventList)
     NextEvent = EventList(1);
     times = [times, NextEvent.time];
+    queues = [queues, q];
     
     switch NextEvent.type
-        case 1 % Type: Arrival
-               % Triggered events: Arrival, Duration (conditional)
+        case 1 % Triggers generation, arrival
             
-            % ===== TO BE EDITED ===== 
             % Simulate next event
             t_g = Exponential(scenario.LAMBDA);
             t_a = scenario.T0 * rand(1);
@@ -79,33 +89,37 @@ while ~isempty(EventList)
                 EventList = EventList(2:end);
                 continue
             end
-            
-            % ===== BELOW DOES NOT NEED TO BE EDITED ===== 
-            event_a = NewEvent(NextEvent.time + t_a, 1);
-            event_d = NewEvent(NextEvent.time + t_d, 2);
+            event_g = NewEvent(NextEvent.time + t_g, 1);
+            event_a = NewEvent(NextEvent.time + t_a, 2);
+            EventList = UpdatedEventList(EventList, event_g);
             EventList = UpdatedEventList(EventList, event_a);
-            EventList = UpdatedEventList(EventList, event_d);
             EventList = EventList(2:end);
             
-        case 2 % Type: Duration
-               % Triggered event: nothing
+        case 2 % Triggers departure (if q = 1)
+            q = q + 1;
 
-            % ===== TO BE EDITED ===== 
             % Simulate next event
             if q > 1
                 EventList = EventList(2:end);
                 continue
             end
+            t_d = Exponential(scenario.MU);
+            event_d = NewEvent(NextEvent.time + t_d, 3);
+            EventList = UpdatedEventList(EventList, event_d);
+            EventList = EventList(2:end);
             
-        otherwise % Type: Abandonment
-                  % Triggered event: nothing
+        otherwise % case 3
+            q = q - 1;
             
-            % ===== BELOW DOES NOT NEED TO BE EDITED ===== 
             % Simulate next event
             if q == 0
                 EventList = EventList(2:end);
                 continue
             end
+            t_d = Exponential(scenario.MU);
+            event_d = NewEvent(NextEvent.time + t_d, 3);
+            EventList = UpdatedEventList(EventList, event_d);
+            EventList = EventList(2:end);
     end
 end
 
