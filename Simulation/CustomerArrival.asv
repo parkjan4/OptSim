@@ -11,16 +11,15 @@ function [time_arrival, group_size] = CustomerArrival(t, arrival)
 % ----------------------------------------------------------------------------
 % PARAMETERS
 %
-% t                 Current time
+% t         Current time
 %
-% arrival           5 x 3 matrix of customer arrival rates
+% arrival   5 x 3 matrix of customer arrival rates
 %
 % ---------------------------------------------------------------------------
 % RETURN VALUES
 %
-% time_arrival      Current time + randomly sampled time
-% 
-% group_size        Group size of the next customer
+% time_arrival
+% group_size
 %
 % ============================================================================
 

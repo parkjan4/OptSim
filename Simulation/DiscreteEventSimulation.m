@@ -3,8 +3,6 @@ function [customers, tables, times, queues] = DiscreteEventSimulation(scenario)
 % ============================================================================
 % DESCRIPTION
 %
-% usage: [times, queues] = DiscreteEventSimulation(scenario)
-%
 % Runs a simulation of "scenario".
 %
 % ----------------------------------------------------------------------------
@@ -24,78 +22,99 @@ function [customers, tables, times, queues] = DiscreteEventSimulation(scenario)
 % ---------------------------------------------------------------------------
 % RETURN VALUES
 %
-% times             row vector of event times
-% queues            row vector of queue sizes at the event times
+% customers         Array of "Customers" objects
+% tables            Array of "Tables" objects
+% times             Row vector of event times
+% queues            Row vector of queue sizes at the event times
 %
 % ---------------------------------------------------------------------------
 
-% Step 2: Create an array of "Tables" class objects
+% Create an array of "Tables" class objects
 tables = [];
-ID = 1;
+ID = 1;                                 % default starting ID
 for i = 1:length(scenario.arrangement)
     for t = 1:scenario.arrangement(i)
-        table = Tables;
+        table = Tables;                 % initialize
         table.tableID = ID;
         table.tablesize = i;
         table.busyseats = 0;
+        table.availableseats = i;
         table.assigned_customer = [];
-        tables = [tables, table];
+        table.shared = false;
+        tables = [tables, table];       % Update tables array
         ID = ID + 1;
     end
 end
 
-% Step 3: First event is always "Arrival"
+% First event is always "Arrival"
 [t_a, groupsize] = CustomerArrival(0, scenario.arrival);
-event = NewEvent(t_a, 1);
+ID = 1;                                 % default for first customer
+event = NewEvent(t_a, 1, ID);
 EventList = UpdatedEventList([], event);
 
-if event.time > scenario.Tmax 
+if event.time > scenario.Tmax           % Extremely rare case
     return 
-end % Extremely rare case
+end     
 
 % Initialize an array for "Customers" class objects
 customers = [];
 customer = Customers;
-ID = 1; % default for first customer
 register_customer(customer, ID, event.time, groupsize);
 
-% Step 4: Initialize variables for measuring indicators
+% Abandonment times
+abandonment_list = Abandonments(event.time,[],ID);
+event = NewEvent(abandonment_list(1,1), 3, ID);
+EventList = UpdatedEventList(EventList, event);
+
+% Initialize variables for measuring indicators
 times = [];
-queues = []; % waiting line
+queues = [];            % waiting line
+num_busyseats = [];     % number of busy seats
+num_busytables = [];    % number of busytables
 
 while ~isempty(EventList)
     NextEvent = EventList(1);
     times = [times, NextEvent.time];
     
     switch NextEvent.type
-        case 1 % Type: Arrival
-               % Triggered events: Arrival, Duration (conditional)
+        case 1 
+            % Type: Arrival
+            % Triggered events: Arrival, Duration (conditional)
             
-            % ===== TO BE EDITED ===== 
-            % Simulate next event
-            t_g = Exponential(scenario.LAMBDA);
-            t_a = scenario.T0 * rand(1);
-            if NextEvent.time + min(t_g,t_a) > T
+            %% ===== Trigger next Arrival ===== 
+            [t_a, groupsize] = CustomerArrival(NextEvent.time, scenario.arrival);
+            if t_a > T                          
                 EventList = EventList(2:end);
-                continue
+                continue; 
+            end
+            
+            % Register the new customer
+            customer = Customers;
+            ID = customers(end).customerID + 1;
+            register_customer(customer,ID,NextEvent.time,groupsize);
+            
+            %% ===== Trigger Duration ===== 
+            [tables, assigned] = SeatingPolicy(customers, tables);
+            
+            if assigned == true
+                r = rand();
+                t_d = min(scenario.dmax, scenario.dmin - log(1 - r)*scenario.dmean);
+                is_shared = tables([tables.assigned_customer]]==event.ID).shared;
+                t_d = (1 - 0.5*is_shared)*t_d;    
+                
             end
             
             % ===== BELOW DOES NOT NEED TO BE EDITED ===== 
-            event_a = NewEvent(NextEvent.time + t_a, 1);
-            event_d = NewEvent(NextEvent.time + t_d, 2);
+            event_a = NewEvent(t_a, 1);
+            event_d = NewEvent(t_d, 2);
             EventList = UpdatedEventList(EventList, event_a);
             EventList = UpdatedEventList(EventList, event_d);
             EventList = EventList(2:end);
             
         case 2 % Type: Duration
                % Triggered event: nothing
-
-            % ===== TO BE EDITED ===== 
-            % Simulate next event
-            if q > 1
-                EventList = EventList(2:end);
-                continue
-            end
+            
+            
             
         otherwise % Type: Abandonment
                   % Triggered event: nothing

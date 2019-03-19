@@ -1,4 +1,4 @@
-function event = NewEvent(time, type)
+function event = NewEvent(time, type, customerID)
 
 % =========================================================================
 %
@@ -28,7 +28,7 @@ function event = NewEvent(time, type)
 %
 % =========================================================================
 
-
+event.ID = customerID;
 event.time = time;
 event.type = type;
 

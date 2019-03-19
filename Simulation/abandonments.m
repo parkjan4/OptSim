@@ -1,4 +1,4 @@
-function updated_abandonment = abandonments(t, old_abandonment, customer_ID)
+function updated_abandonment = Abandonments(t, old_abandonment, customer_ID)
 % Updates the list of abandonments one a new group joins the queue.
 % 
 % =========================================================================
@@ -27,14 +27,14 @@ function updated_abandonment = abandonments(t, old_abandonment, customer_ID)
 
 elapsed_time=0;     % Initialize the time spent in queue.
 while (true)
-    elapsed_time=elapsed_time+5;    % Updates the elapsed time.
+    elapsed_time=elapsed_time+5/60;    % Updates the elapsed time.
     r=rand();   % Generates a new random number at each trial, as customers check for abandonment every 5 minutes.
     % Updates the probability of leaving (abandonm) the queue according to the elapsed time.
-    if elapsed_time<=5
+    if elapsed_time<=5/60
         prob_ab=0.1;
-    elseif elapsed_time<=10
+    elseif elapsed_time<=10/60
         prob_ab=0.3;
-    elseif elapsed_time<=20
+    elseif elapsed_time<=20/60
         prob_ab=0.4;
     else
         prob_ab=0.5;
