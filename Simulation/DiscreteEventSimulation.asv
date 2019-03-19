@@ -29,6 +29,9 @@ function [times, queues] = DiscreteEventSimulation(scenario)
 %
 % ---------------------------------------------------------------------------
 
+% Step 1: 1 x 3 vector for arrival rates
+rates = [sum(scenario.arrival(:,1)), sum(scenario.arrival(:,2)), sum(scenario.arrival(:,3))];
+
 % Step 2: Create an array of "Tables" class objects
 tables = [];
 ID = 1;
@@ -45,17 +48,17 @@ for i = 1:length(scenario.arrangement)
 end
 
 % Step 3: First event is always Arrival
-[t_a, groupsize] = CustomerArrival(0, arrival);
-event = NewEvent(t_a, 1);
+r = rand();
+event = NewEvent(-log(1-r)/rates(1), 1);
 EventList = UpdatedEventList([], event);
 
-if event.time > scenario.Tmax return end % Extremely rare case
+if event.time > scenario.Tmax % extremely rare case
+    return
+end
 
 % Initialize an array for "Customers" class objects
 customers = [];
-customer = Customers;
-ID = 1;
-register_customer(customer, ID, event.time, groupsize);
+
 
 % Step 4: Initialize indicator variables
 
