@@ -1,4 +1,4 @@
-%% Test the implementation of DiscreteEventSimulation.m function
+%% Test the implementation of DiscreteEventSimulation.m
 
 %% clean the workspace
 clear all; %Removes all variables, functions, and MEX-files from memory, leaving the workspace empty
@@ -10,7 +10,8 @@ clc; % clear command window
 scenario = NewDay();
 
 % Run the simulation
-[customers, tables, times, queues] = DiscreteEventSimulation(scenario);
+[customers, tables, times, queues, ...
+    num_busyseats, num_busytables] = DiscreteEventSimulation(scenario);
 
 %% Compute indicators
 % Abandonment/Arrival ratio
@@ -25,6 +26,12 @@ profit = revenue - cost;
 
 % Waiting times (vector)
 waiting_times = [customers.time_seated] - [customers.time_arrival];
+
+% Utilization measures (vectors)
+total_seats = [1,2,3,4,5]*scenario.arrangement;
+total_tables = ones(1,5)*scenario.arrangement;
+util_seats = num_busyseats / total_seats;
+util_tables = num_busytables / total_tables;
 
 %% Visualization
 % Graphical animation of the results

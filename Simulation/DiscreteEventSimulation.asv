@@ -73,7 +73,7 @@ while ~isempty(EventList)
     times = [times, NextEvent.time];
     queues = [queues, length(abandonment_list(:,2))];
     num_busyseats = [num_busyseats, sum([tables.busyseats])];
-    num_busytables = [num_busytables, sum([tables.busyseats]~=0)];
+    num_busytables = [num_busytables, tables.b];
     
     switch NextEvent.type
         case 1 

@@ -17,11 +17,19 @@ Seating Policy:
 	Event Type | Triggered Event |
 	------------------------------
 	Arrival    | 1. Arrival (abort if t_sampled > T)
-		   | 2. If we can find a table for the group (see SeatingPolicy.m): 
-		   | 		Update "Tables"
-		   |		Generate Duration =  (1 - 0.5*Shared)*Duration, where Shared==true if the table is shared
-		   |		Update "Customers" {customerID=last ID+1, time_arrival=Arrival, group_size, dinner_duration=Duration, time_seated=time_arrival, revenue=0}
-		   |    Else: queue = queue + 1 (appropriate queue based on group size)
+		   | 2. Trigger Duration (conditional)
+		   | 		[list, Customers, Tables] = SeatingPolicy(customers, Tables, NextEvent.ID, abandonment_list(:,2))
+		   | 		If list is empty i.e. no customers were assigned to a table, I know to:
+		   | 			1. Create abandonment event
+		   |			2. Update EventList
+		   | 			3. Update abandonment_list
+		   |		Else: I know to:
+		   |			1. Iterate over the elements in list (all customers who were able to sit down)
+		   | 			2. Truncate EventList by their customerID's
+		   | 			3. Truncate abandonment_list by their customerID's
+		   | 			4. As many times as there are elements in list:
+		   |				Generate Duration =  (1 - 0.5*Shared)*Duration, where Shared==true if the table is shared (can look up using customerID's)
+     		   |				Update "Customers" {customerID=last ID+1, time_arrival=Arrival, group_size, dinner_duration=Duration, time_seated=time_arrival, revenue=0}
 	Duration   | This means one customer leaves the restaurant:
 		   | 1. Extract customerID for which this Duration belongs
 		   | 2. Look up in "Tables" for this customerID
@@ -34,10 +42,6 @@ Seating Policy:
 		   | if queue > 0
 		   | 		If we can find a table for the next one(s) in line (see SeatingPolicy.m)
 		   | 			... (same thing as #2 above for event type "Arrival") ...
-		   | 			& 
-		   | 			queue = queue - #customers_assigned_to_table (which can be > 1)
-		   | 			Remove corresponding abandonment event in EventList using customerID
-		   | 			Remove corresponding row in abandonment_list using customerID
 		   | 		Else: 	queue remains the same
 		   | Else: 	Do nothing
 	Abandonment| If queue > 0: 
