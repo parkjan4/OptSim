@@ -1,4 +1,4 @@
-function [customers, tables, times, queues] = DiscreteEventSimulation(scenario)
+function [customers, tables, times, queues, num_busyseats, num_busytables] = DiscreteEventSimulation(scenario)
 
 % ============================================================================
 % DESCRIPTION
@@ -26,6 +26,8 @@ function [customers, tables, times, queues] = DiscreteEventSimulation(scenario)
 % tables            Array of "Tables" objects
 % times             Row vector of event times
 % queues            Row vector of queue sizes at the event times
+% num_busyseats     Row vector of number of busy seats at the event times
+% num_busytables    Row vector of number of busy tables at the event times
 %
 % ---------------------------------------------------------------------------
 
