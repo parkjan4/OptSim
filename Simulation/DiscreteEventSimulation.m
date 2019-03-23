@@ -134,7 +134,7 @@ while ~isempty(EventList)
                     duration(customers([customers.customerID]==assignedIDs(k)),t_d);
                     
                     % Update EventList
-                    EventList(UpdatedEventList(EventList, NewEvent(t_d, 2));
+                    EventList(UpdatedEventList(EventList, NewEvent(t_d, 2)));
                 end
             end
 
@@ -193,7 +193,7 @@ while ~isempty(EventList)
                         duration(customers([customers.customerID]==assignedIDs(k)),t_d);
 
                         % Update EventList
-                        EventList(UpdatedEventList(EventList, NewEvent(t_d, 2));
+                        EventList(UpdatedEventList(EventList, NewEvent(t_d, 2)));
                     end
                 end
             end
