@@ -164,6 +164,7 @@ while ~isempty(EventList)
             
             %% ===== Trigger Duration =====
             if isempty(abandonment_list)
+                EventList = EventList(2:end);
                 continue;
             else
                 % Get as many customers in the queue to sit down
@@ -172,6 +173,7 @@ while ~isempty(EventList)
                                                              abandonment_list(:,2),...
                                                              abandonment_list);
                 if isempty(assignedIDs)     % Could not find any table
+                    EventList = EventList(2:end);
                     continue;
                 else
                     for k = 1:length(assignedIDs)
@@ -198,12 +200,15 @@ while ~isempty(EventList)
                 end
             end
             
+            EventList = EventList(2:end);
+            
         otherwise
             % Type: Abandonment
             % Triggered event: nothing
             
             % Update abandonment_list (queue decreases by 1)
             abandonment_list = abandonment_list(2:end,:);
+            EventList = EventList(2:end);
     end
 end
 
