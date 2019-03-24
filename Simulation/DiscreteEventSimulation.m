@@ -65,7 +65,7 @@ register_customer(customer, ID, event.time, groupsize);
 
 % Initialize variables for measuring indicators
 times = [];
-queues = [];     % waiting line (number of cusomters)
+queues = [];     % waiting line (number of customers)
 num_busyseats = [];     % number of busy seats
 num_busytables = [];    % number of busytables
 abandonment_list = [];  
@@ -106,7 +106,7 @@ while ~isempty(EventList)
             
             if isempty(assignedIDs)     % customer did not find a table
                 % Put the customer in the queue
-                abandonment_list = Abandonments(NextEvent.time,...
+                abandonment_list = abandonments(NextEvent.time,...
                                                 abandonment_list,...
                                                 NextEvent.ID);
                 
@@ -117,21 +117,21 @@ while ~isempty(EventList)
             else                        % customers who found a table
                 for k = 1:length(assignedIDs)
                     % Remove their corresponding abandoment events from EventList
-                    EventList([EventList.ID]==assignedIDs(k))=[];
+                    EventList([EventList.ID]==assignedIDs(:,k))=[];
                     % Remove their corresponding rows in abandonment_list
-                    abandonment_list(abandonment_list(:,2)==assignedIDs(k),:)=[];
+                    abandonment_list(abandonment_list(:,2)==assignedIDs(:,k),:)=[];
                     
                     % Generate dinner duration time
                     r = rand();
                     t_d = min(scenario.dmax, scenario.dmin - log(1 - r)*scenario.dmean);
                     
                     % Actual dinner end time (depends on whether table is shared)
-                    is_shared = tables([tables.assigned_customer]==assignedIDs(k)).shared;
+                    is_shared = tables([tables.assigned_customer]==assignedIDs(:,k)).shared;
                     t_d = NextEvent.time + (1 - 0.5*is_shared)*t_d;    
                     
                     % Update "Customers" object (time seated, dinner end time)
-                    seating(customers([customers.customerID]==assignedIDs(k)),NextEvent.time);
-                    duration(customers([customers.customerID]==assignedIDs(k)),t_d);
+                    seating(customers([customers.customerID]==assignedIDs(:,k)),NextEvent.time);
+                    duration(customers([customers.customerID]==assignedIDs(:,k)),t_d);
                     
                     % Update EventList
                     EventList(UpdatedEventList(EventList, NewEvent(t_d, 2)));
@@ -178,21 +178,21 @@ while ~isempty(EventList)
                 else
                     for k = 1:length(assignedIDs)
                         % Remove their corresponding abandoment events from EventList
-                        EventList([EventList.ID]==assignedIDs(k))=[];
+                        EventList([EventList.ID]==assignedIDs(:,k))=[];
                         % Remove their corresponding rows in abandonment_list
-                        abandonment_list(abandonment_list(:,2)==assignedIDs(k),:)=[];
+                        abandonment_list(abandonment_list(:,2)==assignedIDs(:,k),:)=[];
 
                         % Generate dinner duration time
                         r = rand();
                         t_d = min(scenario.dmax, scenario.dmin - log(1 - r)*scenario.dmean);
 
                         % Actual dinner end time (depends on whether table is shared)
-                        is_shared = tables([tables.assigned_customer]==assignedIDs(k)).shared;
+                        is_shared = tables([tables.assigned_customer]==assignedIDs(:,k)).shared;
                         t_d = NextEvent.time + (1 - 0.5*is_shared)*t_d;    
 
                         % Update "Customers" object (time seated, dinner end time)
-                        seating(customers([customers.customerID]==assignedIDs(k)),NextEvent.time);
-                        duration(customers([customers.customerID]==assignedIDs(k)),t_d);
+                        seating(customers([customers.customerID]==assignedIDs(:,k)),NextEvent.time);
+                        duration(customers([customers.customerID]==assignedIDs(:,k)),t_d);
 
                         % Update EventList
                         EventList(UpdatedEventList(EventList, NewEvent(t_d, 2)));
