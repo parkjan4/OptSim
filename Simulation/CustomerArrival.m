@@ -24,12 +24,27 @@ function [time_arrival, group_size] = CustomerArrival(t, arrival)
 %
 % ============================================================================
 
-% Define arrival rate
-rate = sum(arrival(:,floor(t)+1));
+k=0;
+while k==false
+    % Define arrival rate
+    rate = sum(arrival(:,floor(t)+1));
 
-% Generate inter-arrival time
-r = rand();
-time_arrival = t - log(1-r)/rate;
+    % Generate inter-arrival time
+    r = rand();
+    time_arrival = t - log(1-r)/rate;
+    if floor(time_arrival)==floor(t)
+        k=true;
+    else
+        t=floor(t)+1;
+        % Verify whether there will be new arrivals.
+        if t==size(arrival,2)
+            k=true;
+            time_arrival=Inf;
+            group_size=0;
+            return
+        end
+    end
+end
 
 % Determine group size (Inverse Transform Method)
 s = rand(); k=0; i=1;
