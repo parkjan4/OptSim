@@ -1,4 +1,4 @@
-function updated_abandonment = Abandonments(t, old_abandonment, customer_ID)
+function updated_abandonment = abandonments(t, old_abandonment, customer_ID)
 % Updates the list of abandonments one a new group joins the queue.
 % 
 % =========================================================================
@@ -14,7 +14,9 @@ function updated_abandonment = Abandonments(t, old_abandonment, customer_ID)
 % 
 % -------------------------------------------------------------------------
 % Output data:
-%   updated_abandonment Updated abandonment list sorted by time.
+%   updated_abandonment Updated abandonment list sorted by time for
+%                       leaving. It contains:
+%                       [Time of leaving, Group ID, Time of arrival].
 % 
 % -------------------------------------------------------------------------
 % Intermidiate variables (alphabetical order):
@@ -47,7 +49,7 @@ while (true)
 end
 
 % Generates the updated abandonment list sorted by the time for abandonment.
-updated_abandonment=sortrows([old_abandonment; t_abandonment customer_ID]);
+updated_abandonment=sortrows([old_abandonment; t_abandonment customer_ID t]);
 
 end
 

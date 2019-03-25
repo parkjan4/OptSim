@@ -59,7 +59,7 @@ if event.time > scenario.Tmax           % extremely rare case
 end     
 
 % Initialize an array for "Customers" class objects
-customers = [];
+customers = Customers.empty(0,1);
 customer = Customers;                   % initialize "Customers" object
 register_customer(customer, ID, event.time, groupsize);
 
@@ -73,7 +73,7 @@ abandonment_list = [];
 while ~isempty(EventList)
     NextEvent = EventList(1);
     times = [times, NextEvent.time];
-    queues = [queues, length(abandonment_list(:,2))];
+    queues = [queues, size(abandonment_list,1)];
     num_busyseats = [num_busyseats, sum([tables.busyseats])];
     num_busytables = [num_busytables, sum([tables.busyseats]~=0)];
     
@@ -84,14 +84,14 @@ while ~isempty(EventList)
             
             %% ===== Trigger next Arrival ===== 
             [t_a, groupsize] = CustomerArrival(NextEvent.time, scenario.arrival);
-            if t_a > T                          
+            if t_a > scenario.Tmax
                 EventList = EventList(2:end);
                 continue; 
             end
             
             % Register the new customer
             customer = Customers;
-            ID = customers(end).customerID + 1;
+            ID = customer(end).customerID + 1;
             register_customer(customer,ID,NextEvent.time,groupsize);
             
             % Update EventList

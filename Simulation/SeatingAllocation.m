@@ -1,75 +1,125 @@
-function [assignedIDs, customers, tables] = SeatingAllocation(customers, tables, NextEvent.ID, abandonment_list)
+function [assignedIDs, newCustomers, newTables] = ...
+    SeatingAllocation(oldCustomers, oldTables, customerIDs, abandonment_list)
 
 % ============================================================================
 % DESCRIPTION
 %
 % usage: [assignedIDs, customers, tables] = SeatingAllocation(customers, tables, NextEvent.ID, abandonment_list)
-% Allocating a seat to a group with a unique ID
+% Allocates a seat to a refered groups, if possible. Queued users are
+% assigned according to their arrival time.
+% 5 Possible scenarios for assignment:
+%   1)  There is no waiting line and there is an empty table.
+%   2)  There is no waiting line, but there are no empty tables. There are
+%       enough seats in a table to fit the refered group in a busy table.
+%   3)  There is no waiting line and no available seats to fit the group
+%       (without overpassing the table capacity).
+%   4)  There is a waiting line and enough available seats to fit the
+%       refered group.
+%   5)  There is a waiting line and no enough available seats to fit the
+%       refered group.
+% 
+% 5 Actions (one for each scenario):
+%   1)  Assign the refered customer directly to an empty table.
+%   2)  Assign the refered group to a shared table (best as possible or random).
+%   3)  Assign the refered group to the queue.
+%   4)  Assign the refered group to a shared table (best as possible or random).
+%   5)  Assign the refered group to the queue.
 %
 % ----------------------------------------------------------------------------
 % PARAMETERS
-% customers         matrix of "Customer" class objects
+% oldCustomers      Array of "Customer" class objects.
 %
-% tables            1x40 matrix of "Tables" class objects 
+% oldTables         Line vector of "Tables" class objects. 
 %
-% NextEvent.ID      attempt to find a seat to a customer if a new arrival is triggered
+% customerID        ID of refered groups.
 %
-% abandonment_list  used to determine the customer group who is first in the queue
+% abandonment_list  List of abandonments.
 % ---------------------------------------------------------------------------
 % RETURN VALUES
 %
-% assignedIDs       updated list of Tables.assigned_customer
+% assignedIDs       List of assigned tables' IDs.
 %
-% customers         updating the customer information 
+% newCustomers      Updated "Customers" class object array.
 %
-% tables            updating the table information
+% newTables         Updated "Tables" class object array.
 % ============================================================================
 
-%queue.queues = [ ], a list for the number of customers in queue. Last element is always the current number of customers waiting in line.
-%queue.ID = [ ], list of customer ID's who are currently in the queue. First element is the first customer in line 
+% Verify whether the customer list is the queue:
+if isequal(customerIDs,abandonment_list(:,2))
+    % Put customerIDs in arrival order:
+    [~,order]=sort(abandonment_list(:,3));
+    customerIDs=customerIDs(order,:);
+end
+
 assignedIDs = [];
-%queue_size = queue(end).queues;
+newCustomers=oldCustomers;
+newTables=oldTables;
 
-% Scenario 1: There is no queue (abandonment list is empty), assigning incoming group to a table
-if isempty(abandonment_list)
-    group_size = customers(end).groupsize; % store size of the group
-    customer_ID = customers(end).customerID; % store ID of the group
-    for i = 1 :length(tables) % search all tables
-        if tables(i).availableseats < group_size
-            i = i+1; % in case of no availability, proceed to the next table
-        else tables(i).availableseats >= group_size % case of availability 
-            % customers(end).timeseated = NextEvent.time; --> no longer necessary
-            assign_customer(tables(i), customers(end).customerID, customers(end).groupsize); 
-            assignedIDs = [assignedIDs; tables(i).tableID customers(end).customerID];
-            %tables(i).busyseats = group_size;
-            %tables(i).availableseats = tables(i).availableseats - tables(i).busyseats;
-            %tables(i).assigned_customer = [tables(i).assigned_customer customer_ID];
-            %if length(tables(i).assigned_customer) > 1
-                %tables(i).shared = true;
-            %end    
-        end       
-    end
-    %queue_size = queue_size + 1;
-    %queue.queues = [queue.queues queue_size];
-    %queue.ID = [queue.ID customers(end).customerID];
-
-% Scenario 2: There is a queue, sorting the abandonment list to find tables
-else
-    for i = 1 : length(abandonment_list)
-        customer_ID = abandonment_list(:,i); % store ID of the group
-        index = find(customers.customerID == abandonment_list(:,i));
-        group_size = customers(index).groupsize; % store size of the group
-        for i = 1 : length(tables) % search all tables
-            if tables(i).availableseats < group_size
-                i = i+1; % in case of no availability, proceed to the next table
-            else
-                tables(i).availableseats >= group_size
-                assign_customer(tables(i), customers(index).customerID, customers(index).groupsize); 
-                assignedIDs = [assignedIDs; tables(i).tableID customers(index).customerID];
-            end       
+for i=1:length(customerIDs)
+    customerID=customerIDs(i);
+    [~,cID] = find([oldCustomers.customerID]==customerID,1);
+    group_size=oldCustomers(cID).groupsize;
+    if isempty(abandonment_list)
+        % Identify empty tables:
+        emptyTables = [oldTables.availableseats]==[oldTables.tablesize];
+        if any(emptyTables)
+            % Scenario 1:
+            [~,te] = find(emptyTables==1,1);
+            assign_customer(newTables(te), customerID, group_size);
+            assignedIDs = [assignedIDs; newTables(te).tableID, newCustomers(cID).customerID];
+        else
+            % Identify available tables (have enough seats for the group):
+            availableTables=[oldTables.availableseats]>=group_size;
+            if any(availableTables)
+                % Scenario 2:
+                a_table=0;
+                for ta=1:length(availableTables)
+                    % Try to assign best table:
+                    if availableTables(ta)==1 && newTables(ta).availableseats==group_size
+                        a_table=ta;
+                        break;
+                    end
+                end
+                % If there is no best table, assign random table:
+                while a_table==0
+                    r=rand();
+                    newtab=floor(r*length(availableTables))+1;
+                    if availableTables(newtab)==1
+                        a_table=newtab;
+                    end
+                end
+                assign_customer(newTables(a_table), customerID, group_size);
+                assignedIDs = [assignedIDs; newTables(a_table).tableID, newCustomers(cID).customerID];
+    %       else
+                % Scenario 3:
+            end
+        end
+    else
+        availableTables=[oldTables.availableseats]>=group_size;
+        if any(availableTables)
+            % Scenario 4:
+            a_table=0;
+            for ta=1:length(availableTables)
+                % Try to assign best table:
+                if availableTables(ta)==1 && newTables(ta).availableseats==group_size
+                    a_table=ta;
+                    break;
+                end
+            end
+            % If there is no best table, assign random table:
+            while a_table==0
+                r=rand();
+                newtab=floor(r*length(availableTables))+1;
+                if availableTables(newtab)==1
+                    a_table=newtab;
+                end
+            end
+            assign_customer(newTables(a_table), customerID, group_size);
+            assignedIDs = [assignedIDs; newTables(a_table).tableID, newCustomers(cID).customerID];
+    %   else
+            % Scenario 5:
         end
     end
 end
-customers = customers;
-tables = tables;
+
 end
