@@ -59,9 +59,10 @@ if event.time > scenario.Tmax           % extremely rare case
 end     
 
 % Initialize an array for "Customers" class objects
-customers = Customers.empty(0,1);
+customers = [];
 customer = Customers;                   % initialize "Customers" object
-register_customer(customer, ID, event.time, groupsize);
+customer = register_customer(customer, ID, event.time, groupsize);
+customers = [customers, customer];
 
 % Initialize variables for measuring indicators
 times = [];
@@ -92,7 +93,8 @@ while ~isempty(EventList)
             % Register the new customer
             customer = Customers;
             ID = customer(end).customerID + 1;
-            register_customer(customer,ID,NextEvent.time,groupsize);
+            customer = register_customer(customer,ID,NextEvent.time,groupsize);
+            customers = [customers, customer];
             
             % Update EventList
             event_a = NewEvent(t_a, 1);

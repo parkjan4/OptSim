@@ -10,7 +10,7 @@ classdef Customers < handle
     end
     
     methods
-        function [] = register_customer(obj,ID,time,size)
+        function [obj] = register_customer(obj,ID,time,size)
             % Create a "Customers" object for a newly arrived group
             obj.customerID = ID;
             obj.time_arrival = time;
@@ -19,7 +19,7 @@ classdef Customers < handle
             % Initialize missing values for now
             obj.dinner_duration = 0;
             obj.time_seated = inf;
-            obj.revenue = 0;            
+            obj.revenue = 0;
         end
         
         function [] = seating(obj,time)
