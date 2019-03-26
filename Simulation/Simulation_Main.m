@@ -33,6 +33,16 @@ total_tables = ones(1,5)*scenario.arrangement;
 util_seats = num_busyseats / total_seats;
 util_tables = num_busytables / total_tables;
 
+%% Bootstrapping MSE
+draws = 100;                    % Default (do not change)
+BootstrapMSE_Mean = BootstrapMSE(data_vector, @mean, real_mean, draws);
+
+% Outputs
+MSE_mean = var(data_vector)/n_sim;
+display(parameter);             % Empirical mean
+display(MSE_mean);              % Empirical MSE
+display(BoostrapMSE_mean);      % Should be cloes to MSE_mean
+
 %% Visualization
 % Graphical animation of the results
 % DrawNetwork(scenario, times, queues);

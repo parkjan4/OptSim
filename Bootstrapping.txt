@@ -1,0 +1,5 @@
+Bootstrapping is used to:
+- Estimate the MSE of our indicator
+- One realization of the indicator per simulation
+*In the end, use it to justify #simulations we run
+
