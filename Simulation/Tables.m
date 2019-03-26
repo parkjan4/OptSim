@@ -31,24 +31,25 @@ classdef Tables < handle
             obj.availableseats = u;
         end
         
-        function [] = remove_customer(obj, customerID, groupsize)
+        function [] = remove_customer(obj,tableNumber, customerID, groupsize)
+            
             % Removes customerID from the table
-            index = obj.assigned_customer == customerID;
+            index = obj(tableNumber).assigned_customer == customerID;
             
             if sum(index) == 0
                 error('Cannot find customerID');
             end
             
-            obj.assigned_customer(index) = [];
+            obj(tableNumber).assigned_customer(index) = [];
             
             % Check if the table is still shared
-            if length(obj.assigned_customer) <= 1
-                obj.shared = false;
+            if length(obj(tableNumber).assigned_customer) <= 1
+                obj(tableNumber).shared = false;
             end
             
             % Decrease number of busy seats by "groupsize"
-            obj.busyseats = obj.busyseats - groupsize;
-            obj.availableseats = obj.availableseats + groupsize;
+            obj(tableNumber).busyseats = obj(tableNumber).busyseats - groupsize;
+            obj(tableNumber).availableseats = obj(tableNumber).availableseats + groupsize;
             
         end
     end

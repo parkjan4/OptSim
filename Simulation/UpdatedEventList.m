@@ -12,7 +12,7 @@ function newEventList = UpdatedEventList(oldEventList, newEvent)
 % ----------------------------------------------------------------------------
 % PARAMETERS
 %
-% oldEventList  the event list into which "newElement" is to be inserted
+% oldEventList  the event list into which "newEvent" is to be inserted
 % newEvent      the new event to be inserted
 %
 % ---------------------------------------------------------------------------

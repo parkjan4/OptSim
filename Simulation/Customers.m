@@ -12,28 +12,28 @@ classdef Customers < handle
     methods
         function [obj] = register_customer(obj,ID,time,size)
             % Create a "Customers" object for a newly arrived group
-            obj.customerID = ID;
-            obj.time_arrival = time;
-            obj.groupsize = size;
+            obj(end+1).customerID = ID;
+            obj(end).time_arrival = time;
+            obj(end).groupsize = size;
             
             % Initialize missing values for now
-            obj.dinner_duration = 0;
-            obj.time_seated = inf;
-            obj.revenue = 0;
+            obj(end).dinner_duration = 0;
+            obj(end).time_seated = inf;
+            obj(end).revenue = 0;
         end
         
-        function [] = seating(obj,time)
+        function [] = seating(obj,ID,time)
             % Update customer seating time
-            obj.time_seated = time;
+            obj(ID).time_seated = time;
         end
         
-        function [] = duration(obj,time)
+        function [] = duration(obj,ID,time)
             % Update customer dinner ending time
-            obj.dinner_duration = time;
+            obj(ID).dinner_duration = time;
         end
         
-        function [] = bill(obj,amount)
-            obj.revenue = amount;
+        function [] = bill(obj,ID,amount)
+            obj(ID).revenue = amount;
         end
     end
 end

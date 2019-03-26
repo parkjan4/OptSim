@@ -45,10 +45,12 @@ function [assignedIDs, newCustomers, newTables] = ...
 % ============================================================================
 
 % Verify whether the customer list is the queue:
-if isequal(customerIDs,abandonment_list(:,2))
-    % Put customerIDs in arrival order:
-    [~,order]=sort(abandonment_list(:,3));
-    customerIDs=customerIDs(order,:);
+if ~isempty(abandonment_list)
+    if isequal(customerIDs,abandonment_list(:,2))
+        % Put customerIDs in arrival order:
+        [~,order]=sort(abandonment_list(:,3));
+        customerIDs=customerIDs(order,:);
+    end
 end
 
 assignedIDs = [];
