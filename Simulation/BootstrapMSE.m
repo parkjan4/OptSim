@@ -38,7 +38,7 @@ for i=1:draws
     stats(i) = feval(statistic, sub_sample);
     
     % MSE of one instance of bootstrapping
-    Mr(i) = (parameter - mean(stats))^2; 
+    Mr(i) = (parameter - stats(i))^2; 
 end
 
 MSE = mean(Mr);
