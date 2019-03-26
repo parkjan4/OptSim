@@ -4,7 +4,7 @@ classdef Customers < handle
         customerID          % integer
         time_arrival        % double
         groupsize           % integer
-        dinner_duration     % double
+        dinner_departure     % double
         time_seated         % double
         revenue             % double
     end
@@ -17,7 +17,7 @@ classdef Customers < handle
             obj(end).groupsize = size;
             
             % Initialize missing values for now
-            obj(end).dinner_duration = 0;
+            obj(end).dinner_departure = 0;
             obj(end).time_seated = inf;
             obj(end).revenue = 0;
         end
@@ -27,9 +27,9 @@ classdef Customers < handle
             obj(ID).time_seated = time;
         end
         
-        function [] = duration(obj,ID,time)
+        function [] = departure(obj,ID,time)
             % Update customer dinner ending time
-            obj(ID).dinner_duration = time;
+            obj(ID).dinner_departure = time;
         end
         
         function [] = bill(obj,ID,amount)

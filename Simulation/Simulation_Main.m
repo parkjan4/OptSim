@@ -35,7 +35,7 @@ util_tables = num_busytables / total_tables;
 
 %% Visualization
 % Graphical animation of the results
-DrawNetwork(scenario, times, queues);
+% DrawNetwork(scenario, times, queues);
 
 % Chart of the results
-figure;DrawQueues(times, queues);
+% figure;DrawQueues(times, queues);

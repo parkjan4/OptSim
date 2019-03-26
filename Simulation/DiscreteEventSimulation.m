@@ -79,7 +79,7 @@ while ~isempty(EventList)
     switch NextEvent.type
         case 1 
             % Type: Arrival
-            % Triggered events: Arrival, Duration or Abandonment (conditional)
+            % Triggered events: Arrival, Departure or Abandonment (conditional)
             
             %% ===== Trigger next Arrival ===== 
             [t_a, groupsize] = CustomerArrival(NextEvent.time, scenario.arrival);
@@ -96,7 +96,7 @@ while ~isempty(EventList)
             event_a = NewEvent(t_a, 1, ID);
             EventList = UpdatedEventList(EventList, event_a);
             
-            %% ===== Trigger Duration OR Abandonment ===== 
+            %% ===== Trigger Departure OR Abandonment ===== 
             [assignedIDs, customers, tables] = SeatingAllocation(customers,...
                                                              tables,...
                                                              NextEvent.ID,...
@@ -128,7 +128,7 @@ while ~isempty(EventList)
 
                 % Update "Customers" object (time seated, dinner end time)
                 seating(customers,assignedIDs(1,2),NextEvent.time);
-                duration(customers,assignedIDs(1,2),t_d);
+                departure(customers,assignedIDs(1,2),t_d);
 
                 % Update EventList with the group which just get seated
                 EventList=UpdatedEventList(EventList, NewEvent(t_d, 2, assignedIDs(1,2)));
@@ -138,9 +138,9 @@ while ~isempty(EventList)
                 if is_shared==1
                     for l=1:length([tables(assignedIDs(1,1)).assigned_customer])-1
                         newID=tables(assignedIDs(1,1)).assigned_customer(l);
-                        t_dOld=customers(newID).dinner_duration;
+                        t_dOld=customers(newID).dinner_departure;
                         t_dUpdated=NextEvent.time+(t_dOld-NextEvent.time)/2;
-                        duration(customers,newID,t_dUpdated);
+                        departure(customers,newID,t_dUpdated);
                         % Update EventList with the groups already
                         % seated in the shared table
                         eventrows=[EventList.time]==t_dOld;
@@ -162,7 +162,7 @@ while ~isempty(EventList)
             % Check if the table was shared {true, false}
             % Identify the tableNumber
             for i=1:length(tables)
-                if ismember(tables(i).assigned_customer,NextEvent.ID)
+                if ismember(NextEvent.ID,tables(i).assigned_customer)
                     tableNumber=i;
                     break
                 end
@@ -171,11 +171,14 @@ while ~isempty(EventList)
             was_shared = tables(tableNumber).shared;
             % Extract dinner duration time
             % dinner_length = customers([customers.customerID]==NextEvent.ID).dinner_duration;
-            dinner_length = customers(NextEvent.ID).dinner_duration;
-            % Draw customer consumption rate from uniform
-            r = (scenario.consum_max - scenario.consum_min)*rand() + scenario.consum_min;
+            dinner_length = (customers(NextEvent.ID).dinner_departure-customers(NextEvent.ID).time_arrival);
             % calculate bill
-            revenue = (1 - 0.2*was_shared)*r*dinner_length;
+            revenue=0;
+            for i=1:customers(NextEvent.ID).groupsize
+                % Draw customer consumption rate from uniform
+                r = (scenario.consum_max - scenario.consum_min)*rand() + scenario.consum_min;
+                revenue = revenue + (1 - 0.2*was_shared)*(r*60)*dinner_length;
+            end
             
             % Update customers object field "revenue"
             bill(customers,NextEvent.ID,revenue);
@@ -213,7 +216,7 @@ while ~isempty(EventList)
 
                         % Update "Customers" object (time seated, dinner end time)
                         seating(customers,assignedIDs(k,2),NextEvent.time);
-                        duration(customers,assignedIDs(k,2),t_d);
+                        departure(customers,assignedIDs(k,2),t_d);
 
                         % Update EventList with the group which just get seated
                         EventList=UpdatedEventList(EventList, NewEvent(t_d, 2, assignedIDs(k,2)));
@@ -224,9 +227,9 @@ while ~isempty(EventList)
                     if tables(updatedTable).shared==1
                         for l=1:length([tables(updatedTable).assigned_customer])-1
                             newID=tables(updatedTable).assigned_customer(l);
-                            t_dOld=customers(newID).dinner_duration;
+                            t_dOld=customers(newID).dinner_departure;
                             t_dUpdated=NextEvent.time+(t_dOld-NextEvent.time)/2;
-                            duration(customers,newID,t_dUpdated);
+                            departure(customers,newID,t_dUpdated);
                             % Update EventList with the groups already
                             % seated in the shared table
                             eventrows=[EventList.time]==t_dOld;
