@@ -75,6 +75,12 @@ for r=1:runs
         profit_var = 0;
         overtime_avg = max(times) - scenario.Tmax;
         overtime_var = 0;
+        revenue_avg = revenue;
+        revenue_var = 0;
+        cost_avg = cost;
+        cost_var = 0;
+        profit_avg = profit;
+        profit_var = 0;
     else
         [num_admitted_avg, num_admitted_var] = UpdatedStatistics(num_admitted_avg, num_admitted_var, num_admitted, r);
         [num_abandon_avg, num_abandon_var] = UpdatedStatistics(num_abandon_avg, num_abandon_var, num_abandon, r);
@@ -83,7 +89,18 @@ for r=1:runs
         [min_util_tables_avg, min_util_tables_var] = UpdatedStatistics(min_util_tables_avg, min_util_tables_var, min(util_tables), r);
         [profit_avg, profit_var] = UpdatedStatistics(profit_avg, profit_var, profit, r);
         [overtime_avg, overtime_var] = UpdatedStatistics(overtime_avg, overtime_var, max(times)-scenario.Tmax, r);
+        [revenue_avg, revenue_var] = UpdatedStatistics(revenue_avg, revenue_var, revenue, r);
+        [cost_avg, cost_var] = UpdatedStatistics(cost_avg, cost_var, cost, r);
+        [profit_avg, profit_var] = UpdatedStatistics(profit_avg, profit_var, profit, r);
     end
+    
+    revenue_all(r) = revenue;
+    revenue_avg_all(r) = revenue_avg;
+    revenue_var_all(r) = revenue_var;
+    
+    cost_all(r) = cost;
+    cost_avg_all(r) = cost_avg;
+    cost_var_all(r) = cost_var;
     
     profit_all(r) = profit;
     profit_avg_all(r) = profit_avg;
@@ -135,7 +152,39 @@ clc;
 
 %% Profit visualization
 % Running average profit (line plot) + variance of profit + empirical MSE
+figure(1);
+plot(revenue_avg_all);
+hold on;
+plot(cost_avg_all);
+plot(profit_avg_all);
+hold off;
+title('Average Revenue, Cost & Profit');
+xlabel('Number of Simulations');
+ylabel('US Dollars');
+legend('Average Revenue', 'Average Cost', 'Average Profit');
+
+figure(2);
+title('Revenue, Cost & Profit');
+xlabel('Number of Simulations');
+ylabel('US Dollars');
+plot(revenue_all);
+hold on;
+plot(cost_all);
+plot(profit_all);
+hold off;
+title('Revenue, Cost & Profit');
+xlabel('Number of Simulations');
+ylabel('US Dollars');
+legend('Revenue', 'Cost', 'Profit');
+
 % Histogram of profits (worst case, 5th, mean, 95th)
+
+title('Distribution of Revenue');
+plotHistogram(revenue_avg_all, false);
+title('Distribution of Profit');
+plotHistogram(profit_avg_all, false);
+title('Distribution of Cost');
+plotHistogram(cost_avg_all, true);
 
 %% Group size distribution among customers who abandoned
 figure;
