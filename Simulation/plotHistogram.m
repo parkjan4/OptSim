@@ -21,9 +21,7 @@ function plotHistogram(data, worse_case_max)
 
 % Plot the histogram of the maximum queue length
 figure;histogram(data);
-xlabel('Max waiting time [hours]');
 ylabel('Frequency');
-title('Maxium waiting time distribution');
 set(get(gca,'child'),'FaceColor',[0.4,0.4,0.4]);
 
 % Add mean
@@ -40,4 +38,4 @@ else
 end
 
 % Legend
-legend([l1 l2 l3],'mean max-waiting-time','5 and 95 percentile','worst case','Location','Best');
+legend([l1 l2 l3],'mean','5 and 95 percentile','worst case','Location','Best');

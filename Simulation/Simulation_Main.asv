@@ -163,7 +163,7 @@ figure;DrawQueues(times, queues);
 figure;
 plot(max_waiting_times_avg_all); hold on;
 plot(sqrt(max_waiting_times_var_all),'LineStyle','--');
-legend('avg max waiting time','std max waiting time');
+legend('avg max waiting time','std max waiting time','sq);
 xlabel('Number of simulations');
 ylabel('Waiting time [hours]');
 title('Average maximum waiting time in hours');
