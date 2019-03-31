@@ -39,4 +39,15 @@ scenario.Tmax = 3;
 scenario.arrangement = [0;0;0;0;40];
 scenario.seating = 1;
 
+% Below is for DrawNetwork.m
+scenario.X1 = [0.0];
+scenario.Y1 = [0.0];
+scenario.X2 = [1.0];
+scenario.Y2 = [0.0];
+
+scenario.TEXTPOS   = 0.2;
+scenario.JOBLENGTH = 0.1;
+scenario.STEPSIZE  = 0.1;
+scenario.MINDELAY  = 0.0;
+
 end

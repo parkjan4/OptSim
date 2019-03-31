@@ -9,7 +9,9 @@ clc; % clear command window
 % Set the scenario
 scenario = NewDay();
 
-runs = 500;
+runs = 1000;
+groupsize_abandoned = [];
+groupsize_admitted = [];
 for r=1:runs                
     % Run the simulation
     [customers, tables, times, queues, ...
@@ -20,6 +22,12 @@ for r=1:runs
     num_admitted = sum([customers.time_seated] ~= inf);
     num_abandon = sum([customers.time_seated] == inf);
     odds_abandon = num_abandon / num_admitted;
+    
+    % Group size distribution among customers who abandoned
+    groupsize_abandoned = [groupsize_abandoned, ...
+                          [customers([customers.time_seated] == inf).groupsize]];
+    groupsize_admitted = [groupsize_admitted, ...
+                         [customers([customers.time_seated] ~= inf).groupsize]];
 
     % Profit
     revenue = sum([customers.revenue]);
@@ -43,7 +51,7 @@ for r=1:runs
         num_abandon_var = 0;
         odds_abandon_avg = odds_abandon;
         odds_abandon_var = 0;
-        max_waiting_times_avg = max(waiting_times);
+        max_waiting_times_avg = max(waiting_times(waiting_times~=Inf));
         max_waiting_times_var = 0;
         min_util_seats_avg = min(util_seats);
         min_util_seats_var = 0;
@@ -55,7 +63,7 @@ for r=1:runs
         [num_admitted_avg, num_admitted_var] = UpdatedStatistics(num_admitted_avg, num_admitted_var, num_admitted, r);
         [num_abandon_avg, num_abandon_var] = UpdatedStatistics(num_abandon_avg, num_abandon_var, num_abandon, r);
         [odds_abandon_avg, odds_abandon_var] = UpdatedStatistics(odds_abandon_avg, odds_abandon_var, odds_abandon, r);
-        [max_waiting_times_avg, max_waiting_times_var] = UpdatedStatistics(max_waiting_times_avg, max_waiting_times_var, max(waiting_times), r);
+        [max_waiting_times_avg, max_waiting_times_var] = UpdatedStatistics(max_waiting_times_avg, max_waiting_times_var, max(waiting_times(waiting_times~=Inf)), r);
         [min_util_seats_avg, min_util_seats_var] = UpdatedStatistics(min_util_seats_avg, min_util_seats_var, min(util_seats), r);
         [min_util_tables_avg, min_util_tables_var] = UpdatedStatistics(min_util_tables_avg, min_util_tables_var, min(util_tables), r);
         [profit_avg, profit_var] = UpdatedStatistics(profit_avg, profit_var, profit, r);
@@ -77,7 +85,7 @@ for r=1:runs
     odds_abandon_avg_all(r) = odds_abandon_avg;
     odds_abandon_var_all(r) = odds_abandon_var;
     
-    max_waiting_times_all(r) = max(waiting_times);
+    max_waiting_times_all(r) = max(waiting_times(waiting_times~=Inf));
     max_waiting_times_avg_all(r) = max_waiting_times_avg;
     max_waiting_times_var_all(r) = max_waiting_times_var;
     
@@ -88,7 +96,8 @@ for r=1:runs
     min_util_tables_all(r) = min(util_tables);
     min_util_tables_avg_all(r) = min_util_tables_avg;
     min_util_tables_var_all(r) = min_util_tables_var;
-
+    
+    max_waiting_times_mse_all(r) = max_waiting_times_var_all(r)/runs;
 end
 
 %% Bootstrapping MSE
@@ -106,15 +115,40 @@ display(sqrt_MSE_mean);          % Empirical MSE
 display(sqrt_BootstrapMSE_Mean); % Should be cloes to MSE_mean
 
 %% Visualization
+close all;
+clc;
+
 %% Profit visualization
 % Running average profit (line plot) + variance of profit + empirical MSE
 % Histogram of profits (worst case, 5th, mean, 95th)
 
-%% Queue abandonment visualization
+%% Group size distribution among customers who abandoned
+figure;
+count_admitted = histcounts(groupsize_admitted,5);
+count_abandoned = histcounts(groupsize_abandoned,5);
 
+b1 = bar(count_admitted); b1.FaceAlpha=0.1; hold on;
+b2 = bar(count_abandoned); b2.FaceAlpha=1;
 
-% Graphical animation of the results
-% DrawNetwork(scenario, times, queues);
+xlabel('Group Size');
+ylabel('Frequency [-] number of customers');
+title('Customers who stayed vs. abandoned');
+legend('Admitted','Abandoned')
 
-% Chart of the results
-% figure;DrawQueues(times, queues);
+%% Queue length over time visualization
+DrawNetwork(scenario, times, queues);
+figure;DrawQueues(times, queues);
+
+%% Max. waiting time visualization (restricted only to customers who didn't leave)
+figure;
+plot(max_waiting_times_avg_all); hold on;
+plot(sqrt(max_waiting_times_var_all),'LineStyle','--'); hold on;
+plot(sqrt(max_waiting_times_mse_all),'Color','k','LineStyle','--');
+legend('avg max waiting time','std max waiting time','sqrt mse');
+xlabel('Number of simulations');
+ylabel('Waiting time [hours]');
+title('Average maximum waiting time in hours');
+%% Max. waiting time distribution
+plotHistogram(max_waiting_times_all, true);
+
+%% Overtime distribution
