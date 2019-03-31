@@ -9,7 +9,7 @@ clc; % clear command window
 % Set the scenario
 scenario = NewDay();
 
-runs = 300;
+runs = 500;
 for r=1:runs                
     % Run the simulation
     [customers, tables, times, queues, ...
@@ -50,19 +50,21 @@ for r=1:runs
 end
 
 %% Bootstrapping MSE
+clc;
 data_vector = profit_all;
 Mean = mean(profit_all);
 
-draws = 100;                % Default (do not change)
+draws = 100;                     % Default (do not change)
 sqrt_BootstrapMSE_Mean = sqrt(BootstrapMSE(data_vector, @mean, Mean, draws));
 
 % Outputs
 sqrt_MSE_mean = std(data_vector)/sqrt(runs);
-display(Mean);              % Empirical mean
+display(Mean);                   % Empirical mean
 display(sqrt_MSE_mean);          % Empirical MSE
 display(sqrt_BootstrapMSE_Mean); % Should be cloes to MSE_mean
 
 %% Visualization
+
 % Graphical animation of the results
 % DrawNetwork(scenario, times, queues);
 
