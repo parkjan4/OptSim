@@ -19,7 +19,7 @@ for r=1:runs
     % Abandonment/Arrival ratio
     num_admitted = sum([customers.time_seated] ~= inf);
     num_abandon = sum([customers.time_seated] == inf);
-    admit_abandon_ratio = num_admitted / num_abandon;
+    odds_abandon = num_abandon / num_admitted;
 
     % Profit
     revenue = sum([customers.revenue]);
@@ -37,15 +37,57 @@ for r=1:runs
     
     %% Collect statistics
     if r == 1
+        num_admitted_avg = num_admitted;
+        num_admitted_var = 0;
+        num_abandon_avg = num_abandon;
+        num_abandon_var = 0;
+        odds_abandon_avg = odds_abandon;
+        odds_abandon_var = 0;
+        max_waiting_times_avg = max(waiting_times);
+        max_waiting_times_var = 0;
+        min_util_seats_avg = min(util_seats);
+        min_util_seats_var = 0;
+        min_util_tables_avg = min(util_tables);
+        min_util_tables_var = 0;
         profit_avg = profit;
         profit_var = 0;
     else
+        [num_admitted_avg, num_admitted_var] = UpdatedStatistics(num_admitted_avg, num_admitted_var, num_admitted, r);
+        [num_abandon_avg, num_abandon_var] = UpdatedStatistics(num_abandon_avg, num_abandon_var, num_abandon, r);
+        [odds_abandon_avg, odds_abandon_var] = UpdatedStatistics(odds_abandon_avg, odds_abandon_var, odds_abandon, r);
+        [max_waiting_times_avg, max_waiting_times_var] = UpdatedStatistics(max_waiting_times_avg, max_waiting_times_var, max(waiting_times), r);
+        [min_util_seats_avg, min_util_seats_var] = UpdatedStatistics(min_util_seats_avg, min_util_seats_var, min(util_seats), r);
+        [min_util_tables_avg, min_util_tables_var] = UpdatedStatistics(min_util_tables_avg, min_util_tables_var, min(util_tables), r);
         [profit_avg, profit_var] = UpdatedStatistics(profit_avg, profit_var, profit, r);
     end
     
     profit_all(r) = profit;
     profit_avg_all(r) = profit_avg;
     profit_var_all(r) = profit_var;
+    
+    num_admitted_all(r) = num_admitted;
+    num_admitted_avg_all(r) = num_admitted_avg;
+    num_admitted_var_all(r) = num_admitted_var;
+    
+    num_abandon_all(r) = num_abandon;
+    num_abandon_avg_all(r) = num_abandon_avg;
+    num_abandon_var_all(r) = num_abandon_var;
+    
+    odds_abandon_all(r) = odds_abandon;
+    odds_abandon_avg_all(r) = odds_abandon_avg;
+    odds_abandon_var_all(r) = odds_abandon_var;
+    
+    max_waiting_times_all(r) = max(waiting_times);
+    max_waiting_times_avg_all(r) = max_waiting_times_avg;
+    max_waiting_times_var_all(r) = max_waiting_times_var;
+    
+    min_util_seats_all(r) = min(util_seats);
+    min_util_seats_avg_all(r) = min_util_seats_avg;
+    min_util_seats_var_all(r) = min_util_seats_var;
+    
+    min_util_tables_all(r) = min(util_tables);
+    min_util_tables_avg_all(r) = min_util_tables_avg;
+    min_util_tables_var_all(r) = min_util_tables_var;
 
 end
 
@@ -64,6 +106,12 @@ display(sqrt_MSE_mean);          % Empirical MSE
 display(sqrt_BootstrapMSE_Mean); % Should be cloes to MSE_mean
 
 %% Visualization
+%% Profit visualization
+% Running average profit (line plot) + variance of profit + empirical MSE
+% Histogram of profits (worst case, 5th, mean, 95th)
+
+%% Queue abandonment visualization
+
 
 % Graphical animation of the results
 % DrawNetwork(scenario, times, queues);
