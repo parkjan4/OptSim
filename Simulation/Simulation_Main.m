@@ -38,10 +38,26 @@ for r=1:runs
     waiting_times = [customers.time_seated] - [customers.time_arrival];
 
     % Utilization measures (vectors)
-    total_seats = [1,2,3,4,5]*scenario.arrangement;
+    total_seats = [1,2,3,4,5]'.*scenario.arrangement;
     total_tables = ones(1,5)*scenario.arrangement;
-    util_seats = num_busyseats / total_seats;
+
+    if total_seats(1) ~= 0
+        util_seats.one = num_busyseats.one / total_seats(1);   
+    end
+    if total_seats(2) ~= 0
+        util_seats.two = num_busyseats.two / total_seats(2);
+    end
+    if total_seats(3) ~= 0
+        util_seats.three = num_busyseats.three / total_seats(3);
+    end
+    if total_seats(4) ~= 0
+        util_seats.four = num_busyseats.four / total_seats(4);
+    end
+    if total_seats(5) ~= 0
+        util_seats.five = num_busyseats.five / total_seats(5);
+    end
     util_tables = num_busytables / total_tables;
+    
     
     %% Collect statistics
     if r == 1
@@ -53,8 +69,6 @@ for r=1:runs
         odds_abandon_var = 0;
         max_waiting_times_avg = max(waiting_times(waiting_times~=Inf));
         max_waiting_times_var = 0;
-        min_util_seats_avg = min(util_seats);
-        min_util_seats_var = 0;
         min_util_tables_avg = min(util_tables);
         min_util_tables_var = 0;
         profit_avg = profit;
@@ -66,7 +80,6 @@ for r=1:runs
         [num_abandon_avg, num_abandon_var] = UpdatedStatistics(num_abandon_avg, num_abandon_var, num_abandon, r);
         [odds_abandon_avg, odds_abandon_var] = UpdatedStatistics(odds_abandon_avg, odds_abandon_var, odds_abandon, r);
         [max_waiting_times_avg, max_waiting_times_var] = UpdatedStatistics(max_waiting_times_avg, max_waiting_times_var, max(waiting_times(waiting_times~=Inf)), r);
-        [min_util_seats_avg, min_util_seats_var] = UpdatedStatistics(min_util_seats_avg, min_util_seats_var, min(util_seats), r);
         [min_util_tables_avg, min_util_tables_var] = UpdatedStatistics(min_util_tables_avg, min_util_tables_var, min(util_tables), r);
         [profit_avg, profit_var] = UpdatedStatistics(profit_avg, profit_var, profit, r);
         [overtime_avg, overtime_var] = UpdatedStatistics(overtime_avg, overtime_var, max(times)-scenario.Tmax, r);
@@ -91,10 +104,6 @@ for r=1:runs
     max_waiting_times_all(r) = max(waiting_times(waiting_times~=Inf));
     max_waiting_times_avg_all(r) = max_waiting_times_avg;
     max_waiting_times_var_all(r) = max_waiting_times_var;
-    
-    min_util_seats_all(r) = min(util_seats);
-    min_util_seats_avg_all(r) = min_util_seats_avg;
-    min_util_seats_var_all(r) = min_util_seats_var;
     
     min_util_tables_all(r) = min(util_tables);
     min_util_tables_avg_all(r) = min_util_tables_avg;

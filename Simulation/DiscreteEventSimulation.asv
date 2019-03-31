@@ -26,7 +26,7 @@ function [customers, tables, times, queues, num_busyseats, num_busytables] = Dis
 % tables            Array of "Tables" objects
 % times             Row vector of event times
 % queues            Row vector of queue sizes at the event times
-% num_busyseats     Struct of 5 vectors with number of busy seats for each table size
+% num_busyseats     Row vector of number of busy seats at the event times
 % num_busytables    Row vector of number of busy tables at the event times
 %
 % ---------------------------------------------------------------------------
@@ -66,10 +66,10 @@ customers(1)=[];
 times = [];
 queues = [];                % waiting line (number of customers)
 num_busyseats.one = [];     % number of busy seats for table size 1
-num_busyseats.two = [];     % number of busy seats for table size 2
-num_busyseats.three = [];   % number of busy seats for table size 3
-num_busyseats.four = [];    % number of busy seats for table size 4
-num_busyseats.five = [];    % number of busy seats for table size 5
+num_busyseats.two = [];     % number of busy seats
+num_busyseats.three = [];   % number of busy seats
+num_busyseats.four = [];    % number of busy seats
+num_busyseats.five = [];    % number of busy seats
 num_busytables = [];        % number of busytables
 abandonment_list = [];  
 
@@ -77,11 +77,7 @@ while ~isempty(EventList)
     NextEvent = EventList(1);
     times = [times, NextEvent.time];
     queues = [queues, size(abandonment_list,1)];
-    num_busyseats.one = [num_busyseats.one, sum([tables([tables.tablesize]==1).busyseats])];
-    num_busyseats.two = [num_busyseats.two, sum([tables([tables.tablesize]==2).busyseats])];
-    num_busyseats.three = [num_busyseats.three, sum([tables([tables.tablesize]==3).busyseats])];
-    num_busyseats.four = [num_busyseats.four, sum([tables([tables.tablesize]==4).busyseats])];
-    num_busyseats.five = [num_busyseats.five, sum([tables([tables.tablesize]==5).busyseats])];
+    num_busyseats = [num_busyseats, sum([tables.busyseats])];
     num_busytables = [num_busytables, sum([tables.busyseats]~=0)];
     
     switch NextEvent.type
