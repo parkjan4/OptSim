@@ -154,9 +154,39 @@ display(sqrt_BootstrapMSE_Mean); % Should be cloes to MSE_mean
 close all;
 clc;
 
-%% Profit visualization
-% Running average profit (line plot) + variance of profit + empirical MSE
-figure(1);
+%% Revenue, Cost & Profit visualization
+% Running average (line plot) + variance + empirical MSE of revenue, cost &
+% profit
+% Revenue
+figure;
+plot(revenue_avg_all); hold on;
+plot(sqrt(revenue_var_all),'LineStyle','--');
+legend('Avg. Revenue','Std. Revenue');
+xlabel('Number of Simulations');
+ylabel('US Dollars');
+title('Avg. and Std. Revenue');
+
+% Cost
+figure;
+plot(cost_avg_all); hold on;
+plot(sqrt(cost_var_all),'LineStyle','--');
+legend('Avg. Cost','Std. Cost');
+xlabel('Number of Simulations');
+ylabel('US Dollars');
+title('Avg. and Std. Cost');
+
+% Profit
+figure;
+plot(profit_avg_all); hold on;
+plot(sqrt(profit_var_all),'LineStyle','--');
+legend('Avg. Profit','Std. Profit');
+xlabel('Number of Simulations');
+ylabel('US Dollars');
+title('Avg. and Std. Profit');
+
+%% Comparison
+% Average
+figure;
 plot(revenue_avg_all);
 hold on;
 plot(cost_avg_all);
@@ -166,8 +196,8 @@ title('Average Revenue, Cost & Profit');
 xlabel('Number of Simulations');
 ylabel('US Dollars');
 legend('Average Revenue', 'Average Cost', 'Average Profit');
-
-figure(2);
+% All Values
+figure;
 title('Revenue, Cost & Profit');
 xlabel('Number of Simulations');
 ylabel('US Dollars');
@@ -183,12 +213,14 @@ legend('Revenue', 'Cost', 'Profit');
 
 % Histogram of profits (worst case, 5th, mean, 95th)
 
-title('Distribution of Revenue');
 plotHistogram(revenue_avg_all, false);
-title('Distribution of Profit');
+title('Distribution of Revenue');
+
 plotHistogram(profit_avg_all, false);
-title('Distribution of Cost');
+title('Distribution of Profit');
+
 plotHistogram(cost_avg_all, true);
+title('Distribution of Cost');
 
 %% Group size distribution among customers who abandoned
 figure;
