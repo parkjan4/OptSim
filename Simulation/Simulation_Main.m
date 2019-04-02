@@ -9,9 +9,11 @@ clc; % clear command window
 % Set the scenario 
 table_arrangement1 = [0;0;0;0;40];
 table_arrangement2 = [0;50;0;0;20];
-scenario = NewDay([0;0;0;0;40]);
+table_arrangement3 = [19;28;15;10;8];
+table_arrangement4 = [1;28;15;12;10];
+scenario = NewDay(table_arrangement4);
 
-runs = 1000;
+runs = 100;
 groupsize_abandoned = [];
 groupsize_admitted = [];
 for r=1:runs                

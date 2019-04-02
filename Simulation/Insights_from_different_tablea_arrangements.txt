@@ -1,0 +1,20 @@
+*Experiments with 100 simulations
+
+Table Arrangement 1: 40 tables of size 5
+- Yields lowest % of abandonments across all customer sizes
+- Profit and Revenue negative exponentially distributed (SHOULD CONFIRM WITH HIGHER #SIMULATIONS)
+- Mean Profit: 1.14 e+04 (lowest we've seen)
+
+Table Arrangement 2: table numbers distributed according to arrival rate
+- Greater % of abandonments across all customer sizes => positively exponentially distributed i.e. #abandonments becoming much higher for larger customer groups
+- Profit and Revenue roughly normally distributed (SHOULD CONFIRM WITH HIGHER #SIMULATIONS)
+- Mean Profit: 1.29 +e04
+*Sharing tables is costlier than abandonments
+
+Table Arrangement 3: Removing tables with size 1 and distributing equally among tables of size 4 and 5
+- Lower % abandonments across all customer sizes in general, but similar distribution as Table Arrangement 2 (positive exponential)
+- Profit and Revenue roughly normally distributed (SHOULD CONFIRM WITH HIGHER #SIMULATIONS)
+- Mean Profit: 1.32 +e04
+*Table sizes of 1 are not profitable
+
+

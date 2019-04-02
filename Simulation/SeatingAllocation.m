@@ -67,8 +67,10 @@ for i=1:length(customerIDs)
         if any(emptyTables)
             % Scenario 1:
             [~,te] = find(emptyTables==1,1);
-            assign_customer(newTables(te), customerID, group_size);
-            assignedIDs = [assignedIDs; newTables(te).tableID, newCustomers(cID).customerID];
+            if newTables(te).availableseats >= group_size
+                assign_customer(newTables(te), customerID, group_size);
+                assignedIDs = [assignedIDs; newTables(te).tableID, newCustomers(cID).customerID];
+            end
         else
             % Identify available tables (have enough seats for the group):
             availableTables=[oldTables.availableseats]>=group_size;
@@ -90,8 +92,10 @@ for i=1:length(customerIDs)
                         a_table=newtab;
                     end
                 end
-                assign_customer(newTables(a_table), customerID, group_size);
-                assignedIDs = [assignedIDs; newTables(a_table).tableID, newCustomers(cID).customerID];
+                if newTables(a_table).availableseats >= group_size
+                    assign_customer(newTables(a_table), customerID, group_size);
+                    assignedIDs = [assignedIDs; newTables(a_table).tableID, newCustomers(cID).customerID];
+                end
     %       else
                 % Scenario 3:
             end
@@ -116,8 +120,10 @@ for i=1:length(customerIDs)
                     a_table=newtab;
                 end
             end
-            assign_customer(newTables(a_table), customerID, group_size);
-            assignedIDs = [assignedIDs; newTables(a_table).tableID, newCustomers(cID).customerID];
+            if newTables(a_table).availableseats >= group_size
+                assign_customer(newTables(a_table), customerID, group_size);
+                assignedIDs = [assignedIDs; newTables(a_table).tableID, newCustomers(cID).customerID];
+            end
     %   else
             % Scenario 5:
         end
