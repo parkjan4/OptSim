@@ -34,10 +34,6 @@ function [avg, variance, newData] =  ControlledMean(data, controlData, expectedC
 % ============================================================================
 
 
-% Qual eh o output X da simulacao?
-% R.: X=max(queues).
-% Qual eh o output Y da simulacao?
-% R.: Y=meanServiceTimes.
 if length(data)==1 % And controlData as well
     cstar=0;
 else

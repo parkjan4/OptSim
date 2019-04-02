@@ -140,8 +140,7 @@ for r=1:runs
     tot_arrivals_var_all(r) = tot_arrivals_var;
     
     %% Update Controlled variate:
-    [z_avg, z_var, z] = ControlledMean(profit_all,tot_arrivals_all,sum(scenario.arrival,'all'));
-    z_all(r) = z;
+    [z_avg, z_var, z_all] = ControlledMean(profit_all,tot_arrivals_all,sum(scenario.arrival,'all'));
     z_avg_all(r) = z_avg;
     z_var_all(r) = z_var;
 end
