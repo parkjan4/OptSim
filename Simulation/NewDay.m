@@ -1,5 +1,5 @@
 
-function scenario = NewDay()
+function scenario = NewDay(table_arrangement)
 
 % ============================================================================
 % DESCRIPTION
@@ -9,6 +9,9 @@ function scenario = NewDay()
 % Builds a single day scenario
 %
 % ----------------------------------------------------------------------------
+% PARAMETERS
+% 
+% table_arrangement 5 x 1 vector that contains table arrangements
 % RETURN VALUES
 %
 % scenario
@@ -36,7 +39,7 @@ scenario.dmean = 1/3;           % 20 minutes in hours
 scenario.consum_min = 0.5;      % in EUR/minute
 scenario.consum_max = 1.2;      % in EUR/minute
 scenario.Tmax = 3;
-scenario.arrangement = [0;0;0;0;40];
+scenario.arrangement = table_arrangement;
 scenario.seating = 1;
 
 % Below is for DrawNetwork.m

@@ -6,8 +6,10 @@ close all; % delete all figures whose handles are not hidden.
 clc; % clear command window
 
 %% Program
-% Set the scenario
-scenario = NewDay();
+% Set the scenario 
+table_arrangement1 = [0;0;0;0;40];
+table_arrangement2 = [0;50;0;0;20];
+scenario = NewDay([0;0;0;0;40]);
 
 runs = 1000;
 groupsize_abandoned = [];
