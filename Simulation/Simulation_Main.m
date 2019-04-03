@@ -11,7 +11,7 @@ table_arrangement1 = [0;0;0;0;40];      % Default
 table_arrangement2 = [0;50;0;0;20];     % Second default
 table_arrangement3 = [19;28;15;10;8];   % Table allocated according to arrival rate
 table_arrangement4 = [1;28;15;12;10];   % Redistributed tables of size 1
-scenario = NewDay(table_arrangement1);
+scenario = NewDay(table_arrangement4);
 
 runs = 100;
 groupsize_abandoned = [];
@@ -19,7 +19,7 @@ groupsize_admitted = [];
 for r=1:runs                
     % Run the simulation
     [customers, tables, times, queues, num_busyseats,...
-     num_busytables, num_shared_tables] = DiscreteEventSimulation(scenario);
+     num_busytables, num_cust_who_share] = DiscreteEventSimulation(scenario);
 
     %% Compute indicators
     % Abandonment/Arrival ratio
@@ -42,7 +42,7 @@ for r=1:runs
     waiting_times = [customers.time_seated] - [customers.time_arrival];
     
     % Average number of shared tables
-    mean_num_shared = mean(num_shared_tables);
+    mean_num_shared = mean(num_cust_who_share);
     
     % Utilization measures (vectors)
     total_seats = [1,2,3,4,5]'.*scenario.arrangement;
@@ -246,12 +246,12 @@ title('Customers who stayed vs. abandoned');
 legend('Admitted','Abandoned')
 
 %% Number of shared tables
-DrawNetwork(scenario, times, num_shared_tables);
-figure;DrawQueues(times, num_shared_tables);
-title('Number of shared tables over time');
+DrawNetwork(scenario, times, num_cust_who_share);
+figure;DrawQueues(times, num_cust_who_share);
+title('Number of customers who are sharing tables over time');
 
 plotHistogram(mean_num_shared_all, true);
-title('Distribution of mean number of shared tables');
+title('Distribution of mean number of customers who shared tables');
 
 %% Odds of customers abandoning our restaurant
 figure;

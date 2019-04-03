@@ -1,5 +1,5 @@
 function [customers, tables, times, queues, num_busyseats,...
-          num_busytables,num_shared_tables] = DiscreteEventSimulation(scenario)
+          num_busytables,num_cust_who_share] = DiscreteEventSimulation(scenario)
 
 % ============================================================================
 % DESCRIPTION
@@ -73,7 +73,7 @@ num_busyseats.four = [];    % number of busy seats for table size 4
 num_busyseats.five = [];    % number of busy seats for table size 5
 num_busytables = [];        % number of busytables
 abandonment_list = [];
-num_shared_tables = [];     % number of shared tables
+num_cust_who_share = [];     % number of shared tables
 
 while ~isempty(EventList)
     NextEvent = EventList(1);
@@ -85,7 +85,14 @@ while ~isempty(EventList)
     num_busyseats.four = [num_busyseats.four, sum([tables([tables.tablesize]==4).busyseats])];
     num_busyseats.five = [num_busyseats.five, sum([tables([tables.tablesize]==5).busyseats])];
     num_busytables = [num_busytables, sum([tables.busyseats]~=0)];
-    num_shared_tables = [num_shared_tables, sum([tables.shared]==true)];
+    
+    % Count number of customers who are sharing a table
+    summand = 0;
+    indices = find([tables.shared]); % returns indices for which shared==true
+    for i=1:length(indices)
+        summand = summand + length(tables(indices(i)).assigned_customer);
+    end
+    num_cust_who_share = [num_cust_who_share, summand];
     
     switch NextEvent.type
         case 1 
