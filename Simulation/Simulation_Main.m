@@ -7,10 +7,10 @@ clc; % clear command window
 
 %% Program
 % Set the scenario 
-table_arrangement1 = [0;0;0;0;40];
-table_arrangement2 = [0;50;0;0;20];
-table_arrangement3 = [19;28;15;10;8];
-table_arrangement4 = [1;28;15;12;10];
+table_arrangement1 = [0;0;0;0;40];      % Default
+table_arrangement2 = [0;50;0;0;20];     % Second default
+table_arrangement3 = [19;28;15;10;8];   % Table allocated according to arrival rate
+table_arrangement4 = [1;28;15;12;10];   % Redistributed tables of size 1
 scenario = NewDay(table_arrangement4);
 
 runs = 100;
