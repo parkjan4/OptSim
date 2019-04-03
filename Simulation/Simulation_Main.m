@@ -11,15 +11,15 @@ table_arrangement1 = [0;0;0;0;40];      % Default
 table_arrangement2 = [0;50;0;0;20];     % Second default
 table_arrangement3 = [19;28;15;10;8];   % Table allocated according to arrival rate
 table_arrangement4 = [1;28;15;12;10];   % Redistributed tables of size 1
-scenario = NewDay(table_arrangement4);
+scenario = NewDay(table_arrangement1);
 
 runs = 100;
 groupsize_abandoned = [];
 groupsize_admitted = [];
 for r=1:runs                
     % Run the simulation
-    [customers, tables, times, queues, ...
-        num_busyseats, num_busytables] = DiscreteEventSimulation(scenario);
+    [customers, tables, times, queues, num_busyseats,...
+     num_busytables, num_shared_tables] = DiscreteEventSimulation(scenario);
 
     %% Compute indicators
     % Abandonment/Arrival ratio
@@ -40,7 +40,10 @@ for r=1:runs
 
     % Waiting times (vector)
     waiting_times = [customers.time_seated] - [customers.time_arrival];
-
+    
+    % Average number of shared tables
+    mean_num_shared = mean(num_shared_tables);
+    
     % Utilization measures (vectors)
     total_seats = [1,2,3,4,5]'.*scenario.arrangement;
     total_tables = ones(1,5)*scenario.arrangement;
@@ -85,6 +88,8 @@ for r=1:runs
         cost_var = 0;
         profit_avg = profit;
         profit_var = 0;
+        mean_num_shared_avg = mean_num_shared;
+        mean_num_shared_var = 0;
     else
         [num_admitted_avg, num_admitted_var] = UpdatedStatistics(num_admitted_avg, num_admitted_var, num_admitted, r);
         [num_abandon_avg, num_abandon_var] = UpdatedStatistics(num_abandon_avg, num_abandon_var, num_abandon, r);
@@ -96,6 +101,7 @@ for r=1:runs
         [revenue_avg, revenue_var] = UpdatedStatistics(revenue_avg, revenue_var, revenue, r);
         [cost_avg, cost_var] = UpdatedStatistics(cost_avg, cost_var, cost, r);
         [profit_avg, profit_var] = UpdatedStatistics(profit_avg, profit_var, profit, r);
+        [mean_num_shared_avg, mean_num_shared_var] = UpdatedStatistics(mean_num_shared_avg, mean_num_shared_var, mean_num_shared, r);
     end
     
     revenue_all(r) = revenue;
@@ -109,6 +115,10 @@ for r=1:runs
     profit_all(r) = profit;
     profit_avg_all(r) = profit_avg;
     profit_var_all(r) = profit_var;
+    
+    mean_num_shared_all(r) = mean_num_shared;
+    mean_num_shared_avg_all(r) = mean_num_shared_avg;
+    mean_num_shared_var_all(r) = mean_num_shared_var;
     
     num_admitted_all(r) = num_admitted;
     num_admitted_avg_all(r) = num_admitted_avg;
@@ -235,6 +245,14 @@ ylabel('Frequency [-] number of customers');
 title('Customers who stayed vs. abandoned');
 legend('Admitted','Abandoned')
 
+%% Number of shared tables
+DrawNetwork(scenario, times, num_shared_tables);
+figure;DrawQueues(times, num_shared_tables);
+title('Number of shared tables over time');
+
+plotHistogram(mean_num_shared_all, true);
+title('Distribution of mean number of shared tables');
+
 %% Odds of customers abandoning our restaurant
 figure;
 plot(odds_abandon_avg_all); hold on;
@@ -252,6 +270,7 @@ title('Distribution of odds of customer abandonment');
 %% Queue length over time visualization
 DrawNetwork(scenario, times, queues);
 figure;DrawQueues(times, queues);
+title('Queue length over time');
 
 %% Max. waiting time visualization (restricted only to customers who didn't leave)
 figure;

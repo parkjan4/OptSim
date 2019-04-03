@@ -36,7 +36,7 @@ end
 stairs(times,queues(:,:));
 legend(queue_id(:),'Location','northwest')
 
-title('utilization of seats over time');
+%title('Queue length over time');
 
 drawnow();
 

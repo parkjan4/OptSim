@@ -1,4 +1,5 @@
-function [customers, tables, times, queues, num_busyseats, num_busytables] = DiscreteEventSimulation(scenario)
+function [customers, tables, times, queues, num_busyseats,...
+          num_busytables,num_shared_tables] = DiscreteEventSimulation(scenario)
 
 % ============================================================================
 % DESCRIPTION
@@ -71,7 +72,8 @@ num_busyseats.three = [];   % number of busy seats for table size 3
 num_busyseats.four = [];    % number of busy seats for table size 4
 num_busyseats.five = [];    % number of busy seats for table size 5
 num_busytables = [];        % number of busytables
-abandonment_list = [];  
+abandonment_list = [];
+num_shared_tables = [];     % number of shared tables
 
 while ~isempty(EventList)
     NextEvent = EventList(1);
@@ -83,6 +85,7 @@ while ~isempty(EventList)
     num_busyseats.four = [num_busyseats.four, sum([tables([tables.tablesize]==4).busyseats])];
     num_busyseats.five = [num_busyseats.five, sum([tables([tables.tablesize]==5).busyseats])];
     num_busytables = [num_busytables, sum([tables.busyseats]~=0)];
+    num_shared_tables = [num_shared_tables, sum([tables.shared]==true)];
     
     switch NextEvent.type
         case 1 
