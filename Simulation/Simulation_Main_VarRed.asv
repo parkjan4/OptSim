@@ -148,6 +148,10 @@ for r=1:runs
     z_avg_all(r) = z_avg;
     z_var_all(r) = z_var;
     
+    %% Compute precision
+    BootstrapRMSE_Mean = sqrt(BootstrapMSE(z_all, @mean, z_avg, 100));
+    precision = BootstrapRMSE_Mean / z_avg;
+    precisions(r) = precision;
 end
 
 %% Bootstrapping MSE

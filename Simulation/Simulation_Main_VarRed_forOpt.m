@@ -6,6 +6,7 @@ close all; % delete all figures whose handles are not hidden.
 clc; % clear command window
 
 %% Program
+tic;             % start time
 % Set the scenario
 table_arrangement1 = [0;0;0;0;40];
 table_arrangement2 = [0;50;0;0;20];
@@ -16,7 +17,10 @@ scenario = NewDay(table_arrangement4);
 runs = 250;
 groupsize_abandoned = [];
 groupsize_admitted = [];
-for r=1:runs                
+rMSE = inf; % initial value
+r = 0;
+while rMSE >= 100 || r < 100
+    r = r + 1;
     % Run the simulation
     [customers, tables, times, queues, ...
         num_busyseats, num_busytables] = DiscreteEventSimulation(scenario);
@@ -148,7 +152,15 @@ for r=1:runs
     z_avg_all(r) = z_avg;
     z_var_all(r) = z_var;
     
+    %% Compute root MSE
+    if r<=10
+        continue
+    end
+    rMSE = sqrt(z_var / r);
+    rMSEs(r-10) = rMSE;
+    
 end
+toc;    % end time
 
 %% Bootstrapping MSE
 clc;
