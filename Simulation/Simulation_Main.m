@@ -13,7 +13,7 @@ table_arrangement3 = [19;28;15;10;8];   % Table allocated according to arrival r
 table_arrangement4 = [1;28;15;12;10];   % Redistributed tables of size 1
 scenario = NewDay(table_arrangement4);
 
-runs = 100;
+runs = 250;
 groupsize_abandoned = [];
 groupsize_admitted = [];
 for r=1:runs                
