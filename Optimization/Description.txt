@@ -1,0 +1,32 @@
+Decision variables: 
+	- s: Number of seats to add (0 <= s <= 200)
+	- table_arrangement: 5 x 1 vector of number of tables of each type
+
+Goal: maximize profit
+
+
+Optimization method:
+--------------------
+Simulated annealing
+
+
+Neighborhood Structure:
+-----------------------
+Equivalence between table sizes
+e.g. Removing a table of size 5 = Adding a table of size 4 AND 1
+e.g. Adding a table of size 5 = Removing a table of size 2 AND 3
+...
+*Order in which we check these neighbors is also important
+
+
+Idea 1: Coordinate-wise optimization
+-------
+- Optimize s until we reach a local maximum
+- Hold s constant, optimize table_arrangement until we reach a local maximum
+- Repeat
+
+
+Idea 2: Trigger-based optimization
+-------
+Use "odds of abandonment" and/or "number of shared tables" as a cue to optimize s and/or table_arrangement respectively.
+*Need to define the 'rules' for changing s and/or table_arrangement (i.e. threshold values)

@@ -1,0 +1,6 @@
+Defining neighborhood structures:
+1. Table arrangement (Caio)
+2. Number of seats (Jangwon)
+
+Seating Policy:
+1. Reservation policy (Murat)
