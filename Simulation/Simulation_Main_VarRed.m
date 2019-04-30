@@ -6,17 +6,21 @@ close all; % delete all figures whose handles are not hidden.
 clc; % clear command window
 
 %% Program
+tic;                                    % start time
 % Set the scenario
 table_arrangement1 = [0;0;0;0;40];
 table_arrangement2 = [0;50;0;0;20];
 table_arrangement3 = [19;28;15;10;8];
-table_arrangement4 = [1;28;15;12;10];
-scenario = NewDay(table_arrangement4);
+table_arrangement4 = [0;28;15;12;10];
+table_arrangement5 = [0;75;30;20;16];   % 400 seats distributed accord. to arrival rates
+scenario = NewDay(table_arrangement5);
 
-runs = 250;
 groupsize_abandoned = [];
 groupsize_admitted = [];
-for r=1:runs                
+rMSE = inf; % initial value
+r = 0;
+while rMSE >= 100 || r < 100
+    r = r + 1;
     % Run the simulation
     [customers, tables, times, queues, ...
         num_busyseats, num_busytables] = DiscreteEventSimulation(scenario);
@@ -46,19 +50,19 @@ for r=1:runs
     total_tables = ones(1,5)*scenario.arrangement;
 
     if total_seats(1) ~= 0
-        util_seats.one = num_busyseats.one / total_seats(1);   
+        mean_util_seats.one(r) = mean(num_busyseats.one / total_seats(1));  
     end
     if total_seats(2) ~= 0
-        util_seats.two = num_busyseats.two / total_seats(2);
+        mean_util_seats.two(r) = mean(num_busyseats.two / total_seats(2));
     end
     if total_seats(3) ~= 0
-        util_seats.three = num_busyseats.three / total_seats(3);
+        mean_util_seats.three(r) = mean(num_busyseats.three / total_seats(3));
     end
     if total_seats(4) ~= 0
-        util_seats.four = num_busyseats.four / total_seats(4);
+        mean_util_seats.four(r) = mean(num_busyseats.four / total_seats(4));
     end
     if total_seats(5) ~= 0
-        util_seats.five = num_busyseats.five / total_seats(5);
+        mean_util_seats.five(r) = mean(num_busyseats.five / total_seats(5));
     end
     util_tables = num_busytables / total_tables;
     
@@ -148,7 +152,15 @@ for r=1:runs
     z_avg_all(r) = z_avg;
     z_var_all(r) = z_var;
     
+    %% Compute root MSE
+    if r<=10
+        continue
+    end
+    rMSE = sqrt(z_var / r);
+    rMSEs(r-10) = rMSE;
+    
 end
+toc;    % end time
 
 %% Bootstrapping MSE
 clc;
@@ -261,3 +273,10 @@ title('Average overtime in hours');
 plotHistogram(overtime_all, true);
 title('Distribution of overtime in hours');
 xlabel('Overtime [hours]');
+
+%% Distribution of mean utilization of seats
+% plotHistogram(mean_util_seats.one, false);
+% plotHistogram(mean_util_seats.two, false);
+% plotHistogram(mean_util_seats.three, false);
+% plotHistogram(mean_util_seats.four, false);
+% plotHistogram(mean_util_seats.five, false);

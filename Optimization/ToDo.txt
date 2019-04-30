@@ -1,6 +1,8 @@
-Defining neighborhood structures:
-1. Table arrangement (Caio)
-2. Number of seats (Jangwon)
+- Finding better seating policy (higher profit)
+- Experimenting with table neighborhood structure
 
-Seating Policy:
-1. Reservation policy (Murat)
+Computational issue with simulated annealing:
+- With l = 20, Golden Section Method requires about 5 iterations => five calls of simulated annealing
+- Initialization requires 2 calls of simulated annealing
+- One call of simulated annealing = 2*M*K calls of Run_Simulation (about 20 seconds per call)
+- In total, 7*2*M*K*20 seconds

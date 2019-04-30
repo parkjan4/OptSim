@@ -11,7 +11,7 @@ function new_table_ar = table_neighbor(old_table_ar,split_merge)
 % PARAMETERS
 % 
 % old_table_ar      Current table arrangement.
-% split_merge       Real number in the interval [0,1[ used as switch
+% split_merge       Real number in the interval [0,1] used as switch
 %                   to merge or split tables.
 % 
 % -------------------------------------------------------------------------
