@@ -1,8 +1,8 @@
-function options = table_options(table_size)
+function options = table_options1(table_size)
 % =========================================================================
 % DESCRIPTION
 % 
-% usage: options = table_options(table_size)
+% usage: options = table_options1(table_size)
 % Generates the set of options to split tables of size k (or merge tables
 % to a table of size k). Options are composed of a set of 2 table sizes.
 % 
@@ -19,9 +19,9 @@ function options = table_options(table_size)
 % 
 % =========================================================================
 
-options=zeros(floor(table_size/2),2);
-for i=1:size(options,1)
-    options(i,:)=[table_size-i i];
+options=zeros(floor(table_size/2)-1,2);
+for i=2:size(options,1)+1
+    options(i-1,:)=[table_size-i i];
 end
 
 end
