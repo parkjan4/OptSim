@@ -1,5 +1,5 @@
 
-function [opt_val, opt_sol] = SimulatedAnnealing(problem, initial_solution)
+function [opt_val, opt_sol, values] = SimulatedAnnealing(problem, initial_solution)
 
 % ============================================================================
 % DESCRIPTION
@@ -41,10 +41,14 @@ for m=1:problem.M
     for k=1:problem.K
         temperatures((m-1)*problem.K+k)=T;
         % Select solution from a random neighbor:
-        y=problem.RANDOMIZE(xc,0.5);
+        s = rand();
+        if s <= 0.5
+            y=problem.RANDOMIZE1(xc,0.5);
+        else
+            y=problem.RANDOMIZE2(xc,0.5);
+        end
         fy=-problem.OBJECTIVE_FUNCTION(y);
-        fxc=-problem.OBJECTIVE_FUNCTION(xc);
-        delta=fy-fxc;
+        delta=fy-values(end);
         if delta<0
             xc=y;
             solutions=[solutions,y];
