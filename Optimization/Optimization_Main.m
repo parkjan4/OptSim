@@ -68,12 +68,12 @@ fprintf('The optimal profit lies in interval: [%d %d]\n', optimal_profit_ak_gm, 
 %% Simulated Annealing Method
 
 % Define parameters for simulated annealing (optimizing table arrangement)
-problem.M = 100;                        % Number of temperature changes
-problem.K = 50;                         % Number of iterations per level of temperature
+problem.M = 2;                        % Number of temperature changes
+problem.K = 5;                         % Number of iterations per level of temperature
 problem.D = 500;                        % Average increase of the objective function
 problem.P0 = 0.999;                     % Initial acceptance probability
 problem.Pf = 0.00001;                   % Final acceptance probability
-problem.RANDOMIZE = @table_neighbor;          
+problem.RANDOMIZE = @table_neighbor2;          
 problem.OBJECTIVE_FUNCTION = @Run_Simulation;
 
 % Returns 'optima' profit and table arrangement given lk, mk number of seats
