@@ -29,18 +29,15 @@ if r1<split_merge   % Split tables.
     split=[2 4; 3 3; 2 5; 3 4; 3 5; 4 4; 4 5; 5 5];
     r2=randi(size(split,1));
     while (true)
-        test_table=old_table_ar;
+        new_table_ar=old_table_ar;
         for i=1:2
-            test_table(split(r2,i))=test_table(split(r2,i))-1;
+            new_table_ar(split(r2,i))=new_table_ar(split(r2,i))-1;
         end
-        if any(test_table<0)
+        if any(new_table_ar<0)
             r2=randi(size(split,1));
         else
             break
         end
-    end
-    for i=1:2
-        new_table_ar(split(r2,i))=new_table_ar(split(r2,i))-1;
     end
     % Choose a set of tables with equivalent number of seats:
     options=table_options2(sum(split(r2,:)));
