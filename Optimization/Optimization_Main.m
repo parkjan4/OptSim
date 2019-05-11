@@ -61,31 +61,24 @@ end
 toc                                    % end time
 opt_ak_gm = GreedySeats(ak, scenario);
 opt_bk_gm = GreedySeats(bk, scenario);
-optimal_profit_ak_gm = Run_Simulation(opt_ak_gm);
-optimal_profit_bk_gm = Run_Simulation(opt_bk_gm);
 fprintf('The optimal number of seats lies in interval: [%d %d]\n', ak, bk);
-fprintf('The optimal profit lies in interval: [%d %d]\n', optimal_profit_ak_gm, optimal_profit_bk_gm);
+fprintf('The optimal profit lies is about: %d\n', (-theta_lk + -theta_mk)/2);
+disp(opt_ak_gm)
+disp(opt_bk_gm)
 
 %% Simulated Annealing Method (Hybrid with Greedy Method)
 
 % Define parameters for simulated annealing (optimizing table arrangement)
-problem.M = 5;                          % Number of temperature changes
+problem.M = 20;                          % Number of temperature changes
 problem.K = 10;                          % Number of iterations per level of temperature
-problem.D = 500;                        % Average increase of the objective function
+problem.D = 100;                        % Average increase of the objective function
 problem.P0 = 0.999;                     % Initial acceptance probability
 problem.Pf = 0.00001;                   % Final acceptance probability
 problem.RANDOMIZE1 = @table_neighbor1;     
 problem.RANDOMIZE2 = @table_neighbor2; 
 problem.OBJECTIVE_FUNCTION = @Run_Simulation;
 
-
-% Returns 'optima' profit and table arrangement given lk, mk number of seats
-counter = 0;
-[theta_lk, problem.lk_SOLUTION, values] = SimulatedAnnealing(problem, GreedySeats(lk, scenario));
-all_values.('run'+string(counter)) = values; counter = counter + 1;
-[theta_mk, problem.mk_SOLUTION, values] = SimulatedAnnealing(problem, GreedySeats(mk, scenario));
-all_values.('run'+string(counter)) = values; counter = counter + 1;
-
+counter = 1;
 tic                                 % start time
 while bk - ak >= l
     if theta_lk > theta_mk          % i.e. If profit with mk is higher
@@ -120,10 +113,31 @@ while bk - ak >= l
     
 end
 toc                                 % end time
-[optimal_profit_ak_sa, opt_ak_sa, values] = SimulatedAnnealing(problem, GreedySeats(ak, scenario));
-all_values.('run'+string(counter)) = values; counter = counter + 1;
-[optimal_profit_bk_sa, opt_bk_sa, values] = SimulatedAnnealing(problem, GreedySeats(bk, scenario));
-all_values.('run'+string(counter)) = values; counter = counter + 1;
+%[optimal_profit_ak_sa, opt_ak_sa, values] = SimulatedAnnealing(problem, GreedySeats(ak, scenario));
+%all_values.('run'+string(counter)) = values; counter = counter + 1;
+%[optimal_profit_bk_sa, opt_bk_sa, values] = SimulatedAnnealing(problem, GreedySeats(bk, scenario));
+%all_values.('run'+string(counter)) = values; counter = counter + 1;
 
 fprintf('The optimal number of seats lies in interval: [%d %d]\n', ak, bk);
-fprintf('The optimal profit lies in interval: [%d %d]\n', -optimal_profit_ak_sa, -optimal_profit_bk_sa);
+fprintf('The optimal profit is about: %d\n', (-theta_lk + -theta_mk)/2);
+disp(ak_all)
+disp(bk_all)
+disp(problem.lk_SOLUTION)
+disp(problem.mk_SOLUTION)
+
+%% Plot objective values over iterations
+% plot the values for each iteration
+values = all_values.run2;
+plot(values,'-ko');title('Objective function values over iterations');
+
+% plot the best value
+best_values = values(1);
+for i=1:length(values)
+    if(values(i)<best_values(end))
+        best_values(i)=values(i);
+    else
+        best_values(i)=best_values(end);
+    end
+end
+hold on;plot(best_values,'k:');
+xlabel('Iteration');legend('iteration value','best value');

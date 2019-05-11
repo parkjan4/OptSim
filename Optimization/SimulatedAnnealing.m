@@ -36,9 +36,13 @@ xc=initial_solution;
 solutions=xc;
 values=-problem.OBJECTIVE_FUNCTION(xc);
 temperatures=zeros(problem.M*problem.K,1);
+counter = 0;
+f = waitbar(counter/(problem.M * problem.K));
 for m=1:problem.M
     T=-problem.D/log(problem.P0+(problem.Pf-problem.P0)/problem.M*m);
     for k=1:problem.K
+		counter = counter + 1;
+		waitbar(counter/(problem.M * problem.K),f,'Running Simulated Annealing...') 
         temperatures((m-1)*problem.K+k)=T;
         % Select solution from a random neighbor:
         s = rand();
@@ -60,11 +64,14 @@ for m=1:problem.M
                 xc=y;
                 solutions=[solutions,y];
                 values=[values,fy];
+            else
+                solutions=[solutions, solutions(:,end)];
+                values=[values, values(end)];
             end
         end
     end
 end
-
+close(f);
 % Find optimal solution
 [opt_val, v] = min(values);
 opt_sol = solutions(:,v);
