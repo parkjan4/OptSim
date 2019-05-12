@@ -11,7 +11,7 @@ bk = 400;                       % max. number of seats
 alpha = 0.618;                  % Fibonacci convergence
 lk = ak + (1 - alpha)*(bk - ak);% lambda_k
 mk = ak + alpha*(bk - ak);      % mu_k
-l = 10;                         % "tolerance" between bk and ak
+l = 5;                         % "tolerance" between bk and ak
 thresh = 20;                    % "threshold" for switching from Greedy to another method
 
 %% Greedy Search Method
@@ -127,7 +127,7 @@ disp(problem.mk_SOLUTION)
 
 %% Plot objective values over iterations
 % plot the values for each iteration
-values = all_values.run2;
+values = all_values.run1;
 plot(values,'-ko');title('Objective function values over iterations');
 
 % plot the best value
