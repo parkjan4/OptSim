@@ -20,7 +20,7 @@ ak_all = [];
 dummy=1;
 new_sol=problem.i_SOLUTION; 
 new_val=Profit;
-current_val=inf;
+current_val=0;
 tic                                 % start time
 while new_val>current_val
     %if a neighbor improves the solution, then we store and we keep searching    
@@ -30,43 +30,25 @@ while new_val>current_val
     values(:,dummy)=current_val;
     aux_break=0;
     
-        %1st local search: Split Tables (1,2,3...)
-        %1.1
-        new_table_ar = table_neighborSM1(current_sol,0);
-        for i=1:size(new_table_ar,2)
-            new_val = Run_Simulation(new_table_ar(:,i));
-            if new_val>current_val
-                aux_break=1;
-                break
-            end
-        end
-        %1.2
+        %1st local search: Merge Tables (2,3,4...)
+         %1.1
         if aux_break==0
-             new_table_ar = table_neighborSM2(current_sol,0);
+            new_table_ar = table_neighborSM1(current_sol,1);
             for i=1:size(new_table_ar,2)
-                new_val = Run_Simulation(new_table_ar(:,i));
+                new_sol=new_table_ar(:,i);
+                new_val = Run_Simulation(new_sol);
                 if new_val>current_val
                     aux_break=1;
                     break
                 end
             end
         end
-    
-        %2nd local search: Merge Tables (2,3,4...)
-         %2.1
-        new_table_ar = table_neighborSM1(current_sol,1);
-        for i=1:size(new_table_ar,2)
-            new_val = Run_Simulation(new_table_ar(:,i));
-            if new_val>current_val
-                aux_break=1;
-                break
-            end
-        end
-        %2.2
+        %1.2
         if aux_break==0
              new_table_ar = table_neighborSM2(current_sol,1);
             for i=1:size(new_table_ar,2)
-                new_val = Run_Simulation(new_table_ar(:,i));
+                new_sol=new_table_ar(:,i);
+                new_val = Run_Simulation(new_sol);
                 if new_val>current_val
                     aux_break=1;
                     break
@@ -74,12 +56,41 @@ while new_val>current_val
             end
         end
         
+        
+        %2nd local search: Split Tables (1,2,3...)
+        %2.1
+        if aux_break==0
+            new_table_ar = table_neighborSM1(current_sol,0);
+            for i=1:size(new_table_ar,2)
+                new_sol=new_table_ar(:,i);
+                new_val = Run_Simulation(new_sol);
+                if new_val>current_val
+                    aux_break=1;
+                    break
+                end
+            end
+        end
+        %2.2
+        if aux_break==0
+             new_table_ar = table_neighborSM2(current_sol,0);
+            for i=1:size(new_table_ar,2)
+                new_sol=new_table_ar(:,i);
+                new_val = Run_Simulation(new_sol);
+                if new_val>current_val
+                    aux_break=1;
+                    break
+                end
+            end
+        end
+    
+        
         %3rd local search: Add Tables (1,2,3,...)
         n=1;
         while aux_break==0 && n<6
             new_table_ar=table_neighborARN(current_sol,0,n);
                 for i=1:size(new_table_ar,2)
-                    new_val = Run_Simulation(new_table_ar(:,i));
+                    new_sol=new_table_ar(:,i);
+                    new_val = Run_Simulation(new_sol);
                     if new_val>current_val
                         aux_break=1;
                         break
@@ -93,7 +104,8 @@ while new_val>current_val
         while aux_break==0 && n<6
             new_table_ar=table_neighborARN(current_sol,1,n);
                 for i=1:size(new_table_ar,2)
-                    new_val = Run_Simulation(new_table_ar(:,i));
+                    new_sol=new_table_ar(:,i);
+                    new_val = Run_Simulation(new_sol);
                     if new_val>current_val
                         aux_break=1;
                         break
@@ -101,8 +113,8 @@ while new_val>current_val
                 end
            n=n+1;
         end
-
-    end
+    dummy=dummy+1;
+end
     
 toc                                    % end time
 
