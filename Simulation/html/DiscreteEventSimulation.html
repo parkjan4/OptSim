@@ -1,0 +1,496 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>DiscreteEventSimulation</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-03-25"><meta name="DC.source" content="DiscreteEventSimulation.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">===== Trigger next Arrival =====</a></li><li><a href="#4">===== Trigger Duration OR Abandonment =====</a></li><li><a href="#7">===== Compute revenue =====</a></li><li><a href="#8">===== Trigger Duration =====</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [customers, tables, times, queues, num_busyseats, num_busytables] = DiscreteEventSimulation(scenario)
+
+<span class="comment">% ============================================================================</span>
+<span class="comment">% DESCRIPTION</span>
+<span class="comment">%</span>
+<span class="comment">% Runs a simulation of "scenario".</span>
+<span class="comment">%</span>
+<span class="comment">% ----------------------------------------------------------------------------</span>
+<span class="comment">% PARAMETERS</span>
+<span class="comment">%</span>
+<span class="comment">% scenario</span>
+<span class="comment">% .arrival          5 x 3 matrix that contains arrival rates</span>
+<span class="comment">% .dmin             Minimum dinner duration</span>
+<span class="comment">% .dmax             Maximum dinner duration</span>
+<span class="comment">% .dmean            Mean dinner duration</span>
+<span class="comment">% .consum_min       Minimum consumption rate</span>
+<span class="comment">% .consum_max       Maximum consumption rate</span>
+<span class="comment">% .Tmax             Business closing time</span>
+<span class="comment">% .arrangement      5 x 1 matrix that contains number of tables for each type</span>
+<span class="comment">% .seating          Seating policy</span>
+<span class="comment">%</span>
+<span class="comment">% ---------------------------------------------------------------------------</span>
+<span class="comment">% RETURN VALUES</span>
+<span class="comment">%</span>
+<span class="comment">% customers         Array of "Customers" objects</span>
+<span class="comment">% tables            Array of "Tables" objects</span>
+<span class="comment">% times             Row vector of event times</span>
+<span class="comment">% queues            Row vector of queue sizes at the event times</span>
+<span class="comment">% num_busyseats     Row vector of number of busy seats at the event times</span>
+<span class="comment">% num_busytables    Row vector of number of busy tables at the event times</span>
+<span class="comment">%</span>
+<span class="comment">% ---------------------------------------------------------------------------</span>
+
+<span class="comment">% Create an array of "Tables" class objects</span>
+tables = [];
+ID = 1;                                 <span class="comment">% default starting ID</span>
+<span class="keyword">for</span> i = 1:length(scenario.arrangement)
+    <span class="keyword">for</span> t = 1:scenario.arrangement(i)
+        table = Tables;                 <span class="comment">% initialize</span>
+        table.tableID = ID;
+        table.tablesize = i;
+        table.busyseats = 0;
+        table.availableseats = i;
+        table.assigned_customer = [];
+        table.shared = false;
+        tables = [tables, table];       <span class="comment">% Update tables array</span>
+        ID = ID + 1;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">% First event is always "Arrival"</span>
+[t_a, groupsize] = CustomerArrival(0, scenario.arrival);
+ID = 1;                                 <span class="comment">% default for first customer</span>
+event = NewEvent(t_a, 1, ID);           <span class="comment">% create an event</span>
+EventList = UpdatedEventList([], event);<span class="comment">% update (and sort) EventList</span>
+
+<span class="keyword">if</span> event.time &gt; scenario.Tmax           <span class="comment">% extremely rare case</span>
+    <span class="keyword">return</span>
+<span class="keyword">end</span>
+
+<span class="comment">% Initialize an array for "Customers" class objects</span>
+customers = [];
+customer = Customers;                   <span class="comment">% initialize "Customers" object</span>
+register_customer(customer, ID, event.time, groupsize);
+
+<span class="comment">% Initialize variables for measuring indicators</span>
+times = [];
+queues = [];     <span class="comment">% waiting line (number of customers)</span>
+num_busyseats = [];     <span class="comment">% number of busy seats</span>
+num_busytables = [];    <span class="comment">% number of busytables</span>
+abandonment_list = [];
+
+<span class="keyword">while</span> ~isempty(EventList)
+    NextEvent = EventList(1);
+    times = [times, NextEvent.time];
+    queues = [queues, length(abandonment_list(:,2))];
+    num_busyseats = [num_busyseats, sum([tables.busyseats])];
+    num_busytables = [num_busytables, sum([tables.busyseats]~=0)];
+
+    <span class="keyword">switch</span> NextEvent.type
+        <span class="keyword">case</span> 1
+</pre><pre class="codeinput">            <span class="comment">% Type: Arrival</span>
+            <span class="comment">% Triggered events: Arrival, Duration or Abandonment (conditional)</span>
+</pre><h2 id="3">===== Trigger next Arrival =====</h2><pre class="codeinput">            [t_a, groupsize] = CustomerArrival(NextEvent.time, scenario.arrival);
+            <span class="keyword">if</span> t_a &gt; T
+                EventList = EventList(2:end);
+                <span class="keyword">continue</span>;
+            <span class="keyword">end</span>
+
+            <span class="comment">% Register the new customer</span>
+            customer = Customers;
+            ID = customers(end).customerID + 1;
+            register_customer(customer,ID,NextEvent.time,groupsize);
+
+            <span class="comment">% Update EventList</span>
+            event_a = NewEvent(t_a, 1);
+            EventList = UpdatedEventList(EventList, event_a);
+</pre><h2 id="4">===== Trigger Duration OR Abandonment =====</h2><pre class="codeinput">            [assignedIDs, customers, tables] = SeatingAllocation(customers,<span class="keyword">...</span>
+                                                             tables,<span class="keyword">...</span>
+                                                             NextEvent.ID,<span class="keyword">...</span>
+                                                             abandonment_list);
+
+            <span class="keyword">if</span> isempty(assignedIDs)     <span class="comment">% customer did not find a table</span>
+                <span class="comment">% Put the customer in the queue</span>
+                abandonment_list = abandonments(NextEvent.time,<span class="keyword">...</span>
+                                                abandonment_list,<span class="keyword">...</span>
+                                                NextEvent.ID);
+
+                <span class="comment">% Create an abandonment event &amp; update EventList</span>
+                t_aban = abandonment_list(abandonment_list(:,2)==NextEvent.ID,1);
+                event_aban = NewEvent(t_aban,3,NextEvent.ID);
+                EventList = UpdatedEventList(EventList, event_aban);
+            <span class="keyword">else</span>                        <span class="comment">% customers who found a table</span>
+                <span class="keyword">for</span> k = 1:length(assignedIDs)
+                    <span class="comment">% Remove their corresponding abandoment events from EventList</span>
+                    EventList([EventList.ID]==assignedIDs(:,k))=[];
+                    <span class="comment">% Remove their corresponding rows in abandonment_list</span>
+                    abandonment_list(abandonment_list(:,2)==assignedIDs(:,k),:)=[];
+
+                    <span class="comment">% Generate dinner duration time</span>
+                    r = rand();
+                    t_d = min(scenario.dmax, scenario.dmin - log(1 - r)*scenario.dmean);
+
+                    <span class="comment">% Actual dinner end time (depends on whether table is shared)</span>
+                    is_shared = tables([tables.assigned_customer]==assignedIDs(:,k)).shared;
+                    t_d = NextEvent.time + (1 - 0.5*is_shared)*t_d;
+
+                    <span class="comment">% Update "Customers" object (time seated, dinner end time)</span>
+                    seating(customers([customers.customerID]==assignedIDs(:,k)),NextEvent.time);
+                    duration(customers([customers.customerID]==assignedIDs(:,k)),t_d);
+
+                    <span class="comment">% Update EventList</span>
+                    EventList(UpdatedEventList(EventList, NewEvent(t_d, 2)));
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+
+            EventList = EventList(2:end);
+</pre><pre class="codeinput">        <span class="keyword">case</span> 2
+</pre><pre class="codeinput">            <span class="comment">% Type: Duration</span>
+            <span class="comment">% Triggered event: Duration (conditional)</span>
+</pre><h2 id="7">===== Compute revenue =====</h2><p>Check if the table was shared {true, false}</p><pre class="codeinput">            was_shared = tables([tables.assigned_customer]==NextEvent.ID).shared;
+            <span class="comment">% Extract dinner duration time</span>
+            dinner_length = customers([customers.customerID]==NextEvent.ID).dinner_duration;
+            <span class="comment">% Draw customer consumption rate from uniform</span>
+            r = (scenario.consum_max - scenario.consum_min)*rand() + scenario.consum_min;
+            <span class="comment">% calculate bill</span>
+            revenue = (1 - 0.6*was_shared)*r*dinner_length;
+
+            <span class="comment">% Update customers object field "revenue"</span>
+            bill(customers([customers.customerID]==NextEvent.ID),revenue);
+
+            <span class="comment">% Update tables object by removing this customer now</span>
+            remove_customer(tables([tables.assigned_customer]==NextEvent.ID),<span class="keyword">...</span>
+                            NextEvent.ID,<span class="keyword">...</span>
+                            customers([customers.customerID]==NextEvent.ID).groupsize);
+</pre><h2 id="8">===== Trigger Duration =====</h2><pre class="codeinput">            <span class="keyword">if</span> isempty(abandonment_list)
+                EventList = EventList(2:end);
+                <span class="keyword">continue</span>;
+            <span class="keyword">else</span>
+                <span class="comment">% Get as many customers in the queue to sit down</span>
+                [assignedIDs, customers, tables] = SeatingAllocation(customers,<span class="keyword">...</span>
+                                                             tables,<span class="keyword">...</span>
+                                                             abandonment_list(:,2),<span class="keyword">...</span>
+                                                             abandonment_list);
+                <span class="keyword">if</span> isempty(assignedIDs)     <span class="comment">% Could not find any table</span>
+                    EventList = EventList(2:end);
+                    <span class="keyword">continue</span>;
+                <span class="keyword">else</span>
+                    <span class="keyword">for</span> k = 1:length(assignedIDs)
+                        <span class="comment">% Remove their corresponding abandoment events from EventList</span>
+                        EventList([EventList.ID]==assignedIDs(:,k))=[];
+                        <span class="comment">% Remove their corresponding rows in abandonment_list</span>
+                        abandonment_list(abandonment_list(:,2)==assignedIDs(:,k),:)=[];
+
+                        <span class="comment">% Generate dinner duration time</span>
+                        r = rand();
+                        t_d = min(scenario.dmax, scenario.dmin - log(1 - r)*scenario.dmean);
+
+                        <span class="comment">% Actual dinner end time (depends on whether table is shared)</span>
+                        is_shared = tables([tables.assigned_customer]==assignedIDs(:,k)).shared;
+                        t_d = NextEvent.time + (1 - 0.5*is_shared)*t_d;
+
+                        <span class="comment">% Update "Customers" object (time seated, dinner end time)</span>
+                        seating(customers([customers.customerID]==assignedIDs(:,k)),NextEvent.time);
+                        duration(customers([customers.customerID]==assignedIDs(:,k)),t_d);
+
+                        <span class="comment">% Update EventList</span>
+                        EventList(UpdatedEventList(EventList, NewEvent(t_d, 2)));
+                    <span class="keyword">end</span>
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+
+            EventList = EventList(2:end);
+</pre><pre class="codeinput">        <span class="keyword">otherwise</span>
+            <span class="comment">% Type: Abandonment</span>
+            <span class="comment">% Triggered event: nothing</span>
+
+            <span class="comment">% Update abandonment_list (queue decreases by 1)</span>
+            abandonment_list = abandonment_list(2:end,:);
+            EventList = EventList(2:end);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">Not enough input arguments.
+
+Error in DiscreteEventSimulation (line 37)
+for i = 1:length(scenario.arrangement)
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [customers, tables, times, queues, num_busyseats, num_busytables] = DiscreteEventSimulation(scenario)
+
+% ============================================================================
+% DESCRIPTION
+%
+% Runs a simulation of "scenario".
+%
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% PARAMETERS
+%
+% scenario
+% .arrival          5 x 3 matrix that contains arrival rates 
+% .dmin             Minimum dinner duration
+% .dmax             Maximum dinner duration
+% .dmean            Mean dinner duration
+% .consum_min       Minimum consumption rate
+% .consum_max       Maximum consumption rate
+% .Tmax             Business closing time
+% .arrangement      5 x 1 matrix that contains number of tables for each type
+% .seating          Seating policy
+%
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+% RETURN VALUES
+%
+% customers         Array of "Customers" objects
+% tables            Array of "Tables" objects
+% times             Row vector of event times
+% queues            Row vector of queue sizes at the event times
+% num_busyseats     Row vector of number of busy seats at the event times
+% num_busytables    Row vector of number of busy tables at the event times
+%
+% REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-
+
+% Create an array of "Tables" class objects
+tables = [];
+ID = 1;                                 % default starting ID
+for i = 1:length(scenario.arrangement)
+    for t = 1:scenario.arrangement(i)
+        table = Tables;                 % initialize
+        table.tableID = ID;
+        table.tablesize = i;
+        table.busyseats = 0;
+        table.availableseats = i;
+        table.assigned_customer = [];
+        table.shared = false;
+        tables = [tables, table];       % Update tables array
+        ID = ID + 1;
+    end
+end
+
+% First event is always "Arrival"
+[t_a, groupsize] = CustomerArrival(0, scenario.arrival);
+ID = 1;                                 % default for first customer
+event = NewEvent(t_a, 1, ID);           % create an event
+EventList = UpdatedEventList([], event);% update (and sort) EventList
+
+if event.time > scenario.Tmax           % extremely rare case
+    return 
+end     
+
+% Initialize an array for "Customers" class objects
+customers = [];
+customer = Customers;                   % initialize "Customers" object
+register_customer(customer, ID, event.time, groupsize);
+
+% Initialize variables for measuring indicators
+times = [];
+queues = [];     % waiting line (number of customers)
+num_busyseats = [];     % number of busy seats
+num_busytables = [];    % number of busytables
+abandonment_list = [];  
+
+while ~isempty(EventList)
+    NextEvent = EventList(1);
+    times = [times, NextEvent.time];
+    queues = [queues, length(abandonment_list(:,2))];
+    num_busyseats = [num_busyseats, sum([tables.busyseats])];
+    num_busytables = [num_busytables, sum([tables.busyseats]~=0)];
+    
+    switch NextEvent.type
+        case 1 
+            % Type: Arrival
+            % Triggered events: Arrival, Duration or Abandonment (conditional)
+            
+            %% ===== Trigger next Arrival ===== 
+            [t_a, groupsize] = CustomerArrival(NextEvent.time, scenario.arrival);
+            if t_a > T                          
+                EventList = EventList(2:end);
+                continue; 
+            end
+            
+            % Register the new customer
+            customer = Customers;
+            ID = customers(end).customerID + 1;
+            register_customer(customer,ID,NextEvent.time,groupsize);
+            
+            % Update EventList
+            event_a = NewEvent(t_a, 1);
+            EventList = UpdatedEventList(EventList, event_a);
+            
+            %% ===== Trigger Duration OR Abandonment ===== 
+            [assignedIDs, customers, tables] = SeatingAllocation(customers,...
+                                                             tables,...
+                                                             NextEvent.ID,...
+                                                             abandonment_list);
+            
+            if isempty(assignedIDs)     % customer did not find a table
+                % Put the customer in the queue
+                abandonment_list = abandonments(NextEvent.time,...
+                                                abandonment_list,...
+                                                NextEvent.ID);
+                
+                % Create an abandonment event & update EventList
+                t_aban = abandonment_list(abandonment_list(:,2)==NextEvent.ID,1);
+                event_aban = NewEvent(t_aban,3,NextEvent.ID);
+                EventList = UpdatedEventList(EventList, event_aban);
+            else                        % customers who found a table
+                for k = 1:length(assignedIDs)
+                    % Remove their corresponding abandoment events from EventList
+                    EventList([EventList.ID]==assignedIDs(:,k))=[];
+                    % Remove their corresponding rows in abandonment_list
+                    abandonment_list(abandonment_list(:,2)==assignedIDs(:,k),:)=[];
+                    
+                    % Generate dinner duration time
+                    r = rand();
+                    t_d = min(scenario.dmax, scenario.dmin - log(1 - r)*scenario.dmean);
+                    
+                    % Actual dinner end time (depends on whether table is shared)
+                    is_shared = tables([tables.assigned_customer]==assignedIDs(:,k)).shared;
+                    t_d = NextEvent.time + (1 - 0.5*is_shared)*t_d;    
+                    
+                    % Update "Customers" object (time seated, dinner end time)
+                    seating(customers([customers.customerID]==assignedIDs(:,k)),NextEvent.time);
+                    duration(customers([customers.customerID]==assignedIDs(:,k)),t_d);
+                    
+                    % Update EventList
+                    EventList(UpdatedEventList(EventList, NewEvent(t_d, 2)));
+                end
+            end
+
+            EventList = EventList(2:end);
+            
+        case 2 
+            % Type: Duration
+            % Triggered event: Duration (conditional)
+            
+            %% ===== Compute revenue =====
+            % Check if the table was shared {true, false}
+            was_shared = tables([tables.assigned_customer]==NextEvent.ID).shared;
+            % Extract dinner duration time
+            dinner_length = customers([customers.customerID]==NextEvent.ID).dinner_duration;
+            % Draw customer consumption rate from uniform
+            r = (scenario.consum_max - scenario.consum_min)*rand() + scenario.consum_min;
+            % calculate bill
+            revenue = (1 - 0.6*was_shared)*r*dinner_length;
+            
+            % Update customers object field "revenue"
+            bill(customers([customers.customerID]==NextEvent.ID),revenue);
+            
+            % Update tables object by removing this customer now
+            remove_customer(tables([tables.assigned_customer]==NextEvent.ID),...
+                            NextEvent.ID,...
+                            customers([customers.customerID]==NextEvent.ID).groupsize);
+            
+            %% ===== Trigger Duration =====
+            if isempty(abandonment_list)
+                EventList = EventList(2:end);
+                continue;
+            else
+                % Get as many customers in the queue to sit down
+                [assignedIDs, customers, tables] = SeatingAllocation(customers,...
+                                                             tables,...
+                                                             abandonment_list(:,2),...
+                                                             abandonment_list);
+                if isempty(assignedIDs)     % Could not find any table
+                    EventList = EventList(2:end);
+                    continue;
+                else
+                    for k = 1:length(assignedIDs)
+                        % Remove their corresponding abandoment events from EventList
+                        EventList([EventList.ID]==assignedIDs(:,k))=[];
+                        % Remove their corresponding rows in abandonment_list
+                        abandonment_list(abandonment_list(:,2)==assignedIDs(:,k),:)=[];
+
+                        % Generate dinner duration time
+                        r = rand();
+                        t_d = min(scenario.dmax, scenario.dmin - log(1 - r)*scenario.dmean);
+
+                        % Actual dinner end time (depends on whether table is shared)
+                        is_shared = tables([tables.assigned_customer]==assignedIDs(:,k)).shared;
+                        t_d = NextEvent.time + (1 - 0.5*is_shared)*t_d;    
+
+                        % Update "Customers" object (time seated, dinner end time)
+                        seating(customers([customers.customerID]==assignedIDs(:,k)),NextEvent.time);
+                        duration(customers([customers.customerID]==assignedIDs(:,k)),t_d);
+
+                        % Update EventList
+                        EventList(UpdatedEventList(EventList, NewEvent(t_d, 2)));
+                    end
+                end
+            end
+            
+            EventList = EventList(2:end);
+            
+        otherwise
+            % Type: Abandonment
+            % Triggered event: nothing
+            
+            % Update abandonment_list (queue decreases by 1)
+            abandonment_list = abandonment_list(2:end,:);
+            EventList = EventList(2:end);
+    end
+end
+
+end
+
+##### SOURCE END #####
+--></body></html>
