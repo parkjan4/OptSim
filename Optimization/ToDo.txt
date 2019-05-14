@@ -1,8 +1,9 @@
-- Finding better seating policy (higher profit)
-- Experimenting with table neighborhood structure
+Hybrid Greedy Simulated Annealing method:
+- Play with different parameters (M, K in particular) to get better mean profit
+1. Play around with (smaller) tolerance "l" to get better profits
+2. Play around with (larger) M and K to get better profits
+*Make sure in each simulated annealing run, the volatility of obj. value towards the end is effectively non-existent.
 
-Computational issue with simulated annealing:
-- With l = 20, Golden Section Method requires about 5 iterations => five calls of simulated annealing
-- Initialization requires 2 calls of simulated annealing
-- One call of simulated annealing = 2*M*K calls of Run_Simulation (about 20 seconds per call)
-- In total, 7*2*M*K*20 seconds
+Baseline method:
+1. 100% Greedy approach
+2. Variable neighborhood search

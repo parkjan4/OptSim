@@ -1,5 +1,5 @@
 
-function [opt_val, opt_sol] = SimulatedAnnealing(problem, initial_solution)
+function [opt_val, opt_sol, values] = SimulatedAnnealing(problem, initial_solution)
 
 % ============================================================================
 % DESCRIPTION
@@ -36,15 +36,23 @@ xc=initial_solution;
 solutions=xc;
 values=-problem.OBJECTIVE_FUNCTION(xc);
 temperatures=zeros(problem.M*problem.K,1);
+counter = 0;
+f = waitbar(counter/(problem.M * problem.K));
 for m=1:problem.M
     T=-problem.D/log(problem.P0+(problem.Pf-problem.P0)/problem.M*m);
     for k=1:problem.K
+		counter = counter + 1;
+		waitbar(counter/(problem.M * problem.K),f,'Running Simulated Annealing...') 
         temperatures((m-1)*problem.K+k)=T;
         % Select solution from a random neighbor:
-        y=problem.RANDOMIZE(xc,0.5);
+        s = rand();
+        if s <= 0.5
+            y=problem.RANDOMIZE1(xc,0.5);
+        else
+            y=problem.RANDOMIZE2(xc,0.5);
+        end
         fy=-problem.OBJECTIVE_FUNCTION(y);
-        fxc=-problem.OBJECTIVE_FUNCTION(xc);
-        delta=fy-fxc;
+        delta=fy-values(end);
         if delta<0
             xc=y;
             solutions=[solutions,y];
@@ -56,11 +64,14 @@ for m=1:problem.M
                 xc=y;
                 solutions=[solutions,y];
                 values=[values,fy];
+            else
+                solutions=[solutions, solutions(:,end)];
+                values=[values, values(end)];
             end
         end
     end
 end
-
+close(f);
 % Find optimal solution
 [opt_val, v] = min(values);
 opt_sol = solutions(:,v);
