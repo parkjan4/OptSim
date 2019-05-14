@@ -42,13 +42,13 @@ else
     new_table_ar=repmat(old_table_ar,1,size(options,1));
 end
 if add_remove==0   % Add tables.
-    for i=1:length(options)
+    for i=1:size(options,1)
         for j=1:n
             new_table_ar(options(i,j),i)=new_table_ar(options(i,j),i)+1;
         end
     end
 else
-    for i=1:length(options)
+    for i=1:size(options,1)
         for j=1:n
             new_table_ar(options(i,j),i)=new_table_ar(options(i,j),i)-1;
         end
