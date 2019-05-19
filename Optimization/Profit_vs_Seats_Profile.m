@@ -1,6 +1,6 @@
 %% Greedy solution
 scenario = NewDay([]);
-num_seats = [200, 225, 250, 300, 350, 400];
+num_seats = [200, 204, 208, 212, 216, 220, 225, 250, 300, 350, 400];
 
 Gsolns = [];
 Gobjs = [];
@@ -10,29 +10,25 @@ for n=1:length(num_seats)
     Gobjs = [Gobjs, Run_Simulation(Gsoln)];
 end
 
-%% Simulated annealing solution
-problem.M = 2;                          % Number of temperature changes
-problem.K = 5;                          % Number of iterations per level of temperature
-problem.D = 500;                        % Average increase of the objective function
-problem.P0 = 0.999;                     % Initial acceptance probability
-problem.Pf = 0.00001;                   % Final acceptance probability
-problem.RANDOMIZE1 = @table_neighbor1;          
-problem.RANDOMIZE2 = @table_neighbor2;          
+%% VNS solution
+problem.RANDOMIZE1 = @table_neighborSM1;          
+problem.RANDOMIZE2 = @table_neighborSM2;          
 problem.OBJECTIVE_FUNCTION = @Run_Simulation;
 
-SAsolns = [];
-SAobjs = [];
+%VNSsolns = [];
+%VNSobjs = [];
+num_seats = [208, 212, 216, 220, 225, 250, 300, 350, 400];
 for n=1:length(num_seats)
-    [SAobj, SAsoln] = SimulatedAnnealing(problem, GreedySeats(num_seats(n),scenario));
-    SAsolns = [SAsolns, SAsoln];
-    SAobjs = [SAobjs, SAobj];
+    [SAsols, SAvals] = VNS(problem, GreedySeats(num_seats(n),scenario));
+    VNSsolns = [VNSsolns, SAsols(:,end)];
+    VNSobjs = [VNSobjs, SAvals(end)];
 end
 
 %% Plot profile
 plot(num_seats, Gobjs);
 hold on;
-plot(num_seats, -SAobjs);
-title("Mean Profit vs. Number of Seats  ");
+plot(num_seats, VNSobjs);
+title("Mean Profit vs. Number of Seats");
 ylabel("Mean Profit");
 xlabel("Number of Seats");
-legend("Greedy Method","Simulated Annealing");
+legend("Greedy Method","VNS");

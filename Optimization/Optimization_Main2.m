@@ -11,14 +11,18 @@ bk = 400;                       % max. number of seats
 alpha = 0.618;                  % Fibonacci convergence
 lk = ak + (1 - alpha)*(bk - ak);% lambda_k
 mk = ak + alpha*(bk - ak);      % mu_k
-l = 10;                         % "tolerance" between bk and ak
+l = 5;                         % "tolerance" between bk and ak
 thresh = 50;                    % "threshold" for switching from Greedy to another method
 
 %% Greedy Search Method
+problem.ak_SOLUTION = GreedySeats(ak, scenario);
 problem.lk_SOLUTION = GreedySeats(lk, scenario);  % candidate arrangement
 problem.mk_SOLUTION = GreedySeats(mk, scenario);
+problem.bk_SOLUTION = GreedySeats(bk, scenario);
+theta_ak = -Run_Simulation(problem.ak_SOLUTION);
 theta_lk = -Run_Simulation(problem.lk_SOLUTION);  % negative profit
 theta_mk = -Run_Simulation(problem.mk_SOLUTION);  
+theta_bk = -Run_Simulation(problem.bk_SOLUTION);
 
 % Used to collect number of seats investigated
 ak_all = [];
@@ -34,7 +38,9 @@ while bk - ak >= thresh
         mk = ak + alpha*(bk - ak);
         
         % Update lk, mk solutions
+        theta_ak = theta_lk;
         theta_lk = theta_mk;
+        problem.ak_SOLUTION = problem.lk_SOLUTION;
         problem.lk_SOLUTION = problem.mk_SOLUTION;
         problem.mk_SOLUTION = GreedySeats(mk, scenario);
         theta_mk = -Run_Simulation(problem.mk_SOLUTION);
@@ -45,7 +51,9 @@ while bk - ak >= thresh
         lk = ak + (1 - alpha)*(bk - ak);
         
         % Update lk, mk solutions
+        theta_bk = theta_mk;
         theta_mk = theta_lk;
+        problem.bk_SOLUTION = problem.mk_SOLUTION;
         problem.mk_SOLUTION = problem.lk_SOLUTION;
         problem.lk_SOLUTION = GreedySeats(lk, scenario);
         theta_lk = -Run_Simulation(problem.lk_SOLUTION);
@@ -59,23 +67,29 @@ while bk - ak >= thresh
     
 end
 toc                                    % end time
-opt_ak_gm = GreedySeats(ak, scenario);
-opt_bk_gm = GreedySeats(bk, scenario);
+
 fprintf('The optimal number of seats lies in interval: [%d %d]\n', ak, bk);
-fprintf('The optimal profit lies is about: %d\n', (-theta_lk + -theta_mk)/2);
-disp(opt_ak_gm)
-disp(opt_bk_gm)
+[best_val, ind] = max([-theta_ak -theta_lk -theta_mk -theta_bk]);
+fprintf('Best mean profit found: %d\n', best_val);
+disp('Corresponding table arrangement: ')
+if ind==1
+    disp(problem.ak_SOLUTION');
+    fprintf('Number of seats: %d', problem.ak_SOLUTION'*[1;2;3;4;5]);
+elseif ind==2
+    disp(problem.lk_SOLUTION');
+    fprintf('Number of seats: %d', problem.lk_SOLUTION'*[1;2;3;4;5]);
+elseif ind==3
+    disp(problem.mk_SOLUTION');
+    fprintf('Number of seats: %d', problem.mk_SOLUTION'*[1;2;3;4;5]);
+else
+    disp(problem.bk_SOLUTION');
+    fprintf('Number of seats: %d', problem.bk_SOLUTION'*[1;2;3;4;5]);
+end
 
-%% Simulated Annealing Method (Hybrid with Greedy Method)
 
-% Define parameters for simulated annealing (optimizing table arrangement)
-problem.M = 20;                          % Number of temperature changes
-problem.K = 10;                          % Number of iterations per level of temperature
-problem.D = 100;                        % Average increase of the objective function
-problem.P0 = 0.999;                     % Initial acceptance probability
-problem.Pf = 0.00001;                   % Final acceptance probability
-problem.RANDOMIZE1 = @table_neighbor1;     
-problem.RANDOMIZE2 = @table_neighbor2; 
+%% VNS (Hybrid with Greedy Method)
+problem.RANDOMIZE1 = @table_neighborSM1;     
+problem.RANDOMIZE2 = @table_neighborSM2; 
 problem.OBJECTIVE_FUNCTION = @Run_Simulation;
 
 counter = 1;
@@ -87,10 +101,14 @@ while bk - ak >= l
         mk = ak + alpha*(bk - ak);
         
         % Update lk, mk solutions
+        theta_ak = theta_lk;
         theta_lk = theta_mk;
+        problem.ak_SOLUTION = problem.lk_SOLUTION;
         problem.lk_SOLUTION = problem.mk_SOLUTION;
-        [theta_mk, problem.mk_SOLUTION, values] = SimulatedAnnealing(problem, GreedySeats(mk, scenario));
-        all_values.('run'+string(counter)) = values; counter = counter + 1;
+        [vns_solutions, vns_values] = VNS(problem, GreedySeats(mk, scenario));
+        theta_mk = -vns_values(end);
+        problem.mk_SOLUTION = vns_solutions(:,end);
+        all_values.('run'+string(counter)) = vns_values; counter = counter + 1;
         
     else                            % i.e. If profit with lk is higher
         bk = mk;
@@ -98,11 +116,14 @@ while bk - ak >= l
         lk = ak + (1 - alpha)*(bk - ak);
         
         % Update lk, mk solutions
+        theta_bk = theta_mk;
         theta_mk = theta_lk;
+        problem.bk_SOLUTION = problem.mk_SOLUTION;
         problem.mk_SOLUTION = problem.lk_SOLUTION;
-        [theta_lk, problem.lk_SOLUTION, values] = SimulatedAnnealing(problem, GreedySeats(lk, scenario));
-        all_values.('run'+string(counter)) = values; counter = counter + 1;
-        
+        [vns_solutions, vns_values] = VNS(problem, GreedySeats(lk, scenario));
+        theta_lk = -vns_values(end);
+        problem.lk_SOLUTION = vns_solutions(:,end);
+        all_values.('run'+string(counter)) = vns_values; counter = counter + 1;
     end
     
     % Store progress (continuing from Greedy)
@@ -112,32 +133,41 @@ while bk - ak >= l
     mk_all = [mk_all, mk];
     
 end
-toc                                 % end time
-%[optimal_profit_ak_sa, opt_ak_sa, values] = SimulatedAnnealing(problem, GreedySeats(ak, scenario));
-%all_values.('run'+string(counter)) = values; counter = counter + 1;
-%[optimal_profit_bk_sa, opt_bk_sa, values] = SimulatedAnnealing(problem, GreedySeats(bk, scenario));
-%all_values.('run'+string(counter)) = values; counter = counter + 1;
+toc                                    % end time
 
 fprintf('The optimal number of seats lies in interval: [%d %d]\n', ak, bk);
-fprintf('The optimal profit is about: %d\n', (-theta_lk + -theta_mk)/2);
+[best_val, ind] = max([-theta_ak -theta_lk -theta_mk -theta_bk]);
+fprintf('Best mean profit found: %d\n', best_val);
+disp('Corresponding table arrangement: ')
+if ind==1
+    disp(problem.ak_SOLUTION');
+    fprintf('Number of seats: %d', problem.ak_SOLUTION'*[1;2;3;4;5]);
+elseif ind==2
+    disp(problem.lk_SOLUTION');
+    fprintf('Number of seats: %d', problem.lk_SOLUTION'*[1;2;3;4;5]);
+elseif ind==3
+    disp(problem.mk_SOLUTION');
+    fprintf('Number of seats: %d', problem.mk_SOLUTION'*[1;2;3;4;5]);
+else
+    disp(problem.bk_SOLUTION');
+    fprintf('Number of seats: %d', problem.bk_SOLUTION'*[1;2;3;4;5]);
+end
+
 disp(ak_all)
 disp(bk_all)
-disp(problem.lk_SOLUTION)
-disp(problem.mk_SOLUTION)
 
 %% Plot objective values over iterations
 % plot the values for each iteration
-values = all_values.run1;
-plot(values,'-ko');title('Objective function values over iterations');
+vns_values = all_values.run1;
+plot(vns_values,'-ko');title('Objective function values over iterations');
+xlabel('Iteration');legend('iteration value');
 
-% plot the best value
-best_values = values(1);
-for i=1:length(values)
-    if(values(i)<best_values(end))
-        best_values(i)=values(i);
-    else
-        best_values(i)=best_values(end);
-    end
-end
-hold on;plot(best_values,'k:');
-xlabel('Iteration');legend('iteration value','best value');
+figure();
+vns_values = all_values.run2;
+plot(vns_values,'-ko');title('Objective function values over iterations');
+xlabel('Iteration');legend('iteration value');
+
+figure();
+vns_values = all_values.run3;
+plot(vns_values,'-ko');title('Objective function values over iterations');
+xlabel('Iteration');legend('iteration value');
