@@ -11,9 +11,9 @@ tic;                                    % start time
 table_arrangement1 = [0;0;0;0;40];
 table_arrangement2 = [0;50;0;0;20];
 table_arrangement3 = [19;28;15;10;8];
-table_arrangement4 = [0;28;15;12;10];
-table_arrangement5 = [0;75;30;20;16];   % 400 seats distributed accord. to arrival rates
-scenario = NewDay(table_arrangement5);
+table_arrangement4 = [0;25;15;10;18];
+
+scenario = NewDay(table_arrangement4);
 
 groupsize_abandoned = [];
 groupsize_admitted = [];
@@ -171,7 +171,7 @@ draws = 100;                     % Default (do not change)
 sqrt_BootstrapMSE_Mean = sqrt(BootstrapMSE(data_vector, @mean, Mean, draws));
 
 % Outputs
-sqrt_MSE_mean = std(data_vector)/sqrt(runs);
+sqrt_MSE_mean = std(data_vector)/sqrt(r);
 display(Mean);                   % Empirical mean
 display(sqrt_MSE_mean);          % Empirical MSE
 display(sqrt_BootstrapMSE_Mean); % Should be cloes to MSE_mean
@@ -259,6 +259,7 @@ title('Average maximum waiting time in hours');
 % Max. waiting time distribution
 plotHistogram(max_waiting_times_all, true);
 title('Distribution of max waiting time in hours');
+xlabel('Waiting time [hours]');
 
 %% Overtime distribution
 figure;

@@ -1,0 +1,30 @@
+1. Problem description
+- Summarize and paraphrase the provided problem description
+
+2. Simulation
+- Description of variables and event list
+	Variables and indicators 
+	Description of events and their parameters: Arrival, Departure, Abandonment, Finish
+	Trigger relationships
+- Description of scenario/instance
+- Description of seating policies====================================MURAT=========================================
+- Describe variance reduction method
+	Present the comparison results of regular vs. variance reduction methods
+	Present the reduction in computational cost (stopping criteria: at least 100 simulations AND at least 0.01 precision in Std. Dev profit)
+- Present simulation plots ==================================CAIO========================================
+
+3. Optimization
+- Define the decision variables
+- Define the objective function (justify why we maximize mean profit as opposed to worst case profit, certain percentile, etc.)
+- Describe neighborhood structure
+- Present our baseline model =================================MARTI======================================
+- Present our hybrid approach of combined greedy search and {simulated annealing, VNS} methods on the basis of golden section method
+	In particular, justify our parameters i.e. argue that our choice of M and K are not in fact too small 
+==================================JOHN=======================================
+4. Results & discussion
+- For each seating policy:
+	Present optimal mean profit
+	Present optimal interval for number of seats
+	Present optimal table arrangement
+	Present simulation results (plots)
+		Arrival 
