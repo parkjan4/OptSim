@@ -1,5 +1,5 @@
 function updated_abandonment = abandonments(t, old_abandonment, customer_ID)
-% Updates the list of abandonments one a new group joins the queue.
+% Updates the list of abandonments once a new group joins the queue.
 % 
 % =========================================================================
 % Description:

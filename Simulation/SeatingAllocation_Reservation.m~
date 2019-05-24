@@ -82,8 +82,8 @@ for i=1:length(customerIDs)
         if any(emptyTables)
             % Scenario 1:
             [~,te] = find(emptyTables==1,1);
-            % Prioritize group size chosen earlier
-            if group_size == groupsize_reserve && newTables(te).availableseats >= group_size
+            %Prioritize group size chosen earlier
+            if newTables(te).tablesize == groupsize_reserve 
                 assign_customer(newTables(te), customerID, group_size);
                 assignedIDs = [assignedIDs; newTables(te).tableID, newCustomers(cID).customerID];
             elseif newTables(te).availableseats >= group_size
