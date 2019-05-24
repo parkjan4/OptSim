@@ -1,4 +1,4 @@
-function [solutions,values] = VNS(problem, init_soln)
+function [solutions,values,best_outputs] = VNS(problem, init_soln)
 % Description:
 % ------------
 % PARAMETERS
@@ -19,7 +19,7 @@ function [solutions,values] = VNS(problem, init_soln)
 dummy = 0;
 current_val = 0;
 new_sol = init_soln;
-new_val = problem.OBJECTIVE_FUNCTION(new_sol);
+[new_val,~] = problem.OBJECTIVE_FUNCTION(new_sol);
 f = waitbar(dummy/10);
 while new_val>current_val
     waitbar(dummy/10,f,'Running VNS...');
@@ -38,9 +38,10 @@ while new_val>current_val
         new_table_ar = problem.RANDOMIZE1(current_sol,1);
         for i=1:size(new_table_ar,2)
             new_sol=new_table_ar(:,i);
-            new_val = problem.OBJECTIVE_FUNCTION(new_sol);
+            [new_val,outputs] = problem.OBJECTIVE_FUNCTION(new_sol);
             if new_val>current_val
                 aux_break=1;
+                best_outputs = outputs;
                 break
             end
         end
@@ -50,9 +51,10 @@ while new_val>current_val
          new_table_ar = problem.RANDOMIZE2(current_sol,1);
         for i=1:size(new_table_ar,2)
             new_sol=new_table_ar(:,i);
-            new_val = problem.OBJECTIVE_FUNCTION(new_sol);
+            [new_val,outputs] = problem.OBJECTIVE_FUNCTION(new_sol);
             if new_val>current_val
                 aux_break=1;
+                best_outputs = outputs;
                 break
             end
         end
@@ -65,9 +67,10 @@ while new_val>current_val
         new_table_ar = problem.RANDOMIZE1(current_sol,0);
         for i=1:size(new_table_ar,2)
             new_sol=new_table_ar(:,i);
-            new_val = problem.OBJECTIVE_FUNCTION(new_sol);
+            [new_val,outputs] = problem.OBJECTIVE_FUNCTION(new_sol);
             if new_val>current_val
                 aux_break=1;
+                best_outputs = outputs;
                 break
             end
         end
@@ -77,13 +80,16 @@ while new_val>current_val
          new_table_ar = problem.RANDOMIZE2(current_sol,0);
         for i=1:size(new_table_ar,2)
             new_sol=new_table_ar(:,i);
-            new_val = problem.OBJECTIVE_FUNCTION(new_sol);
+            [new_val,outputs] = problem.OBJECTIVE_FUNCTION(new_sol);
             if new_val>current_val
                 aux_break=1;
+                best_outputs = outputs;
                 break
             end
         end
     end
 end
+
+
 end
 

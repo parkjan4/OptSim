@@ -7,13 +7,22 @@ clc
 % Initialization
 scenario = NewDay([]);
 
+% Struct to store all sub-level structs of results from each Run_Simulation()
+OUTPUT = [];
+Arrangement = [];
+
 %% Greedy Search Method - Construction heuristic
 InSeats=200;
 problem.i_SOLUTION = GreedySeats(InSeats, scenario);  % candidate arrangement
-Profit = Run_Simulation(problem.i_SOLUTION);  % profit
+[Profit,outputs] = Run_Simulation(problem.i_SOLUTION);  % profit
 
 % Used to collect number of seats investigated
 ak_all = [];
+
+% Store
+OUTPUT.arrangement1 = outputs;
+Arrangement.arrangement1 = problem.i_SOLUTION;
+ind = 2;
 
 %% VNS 
 %initialization
@@ -36,9 +45,12 @@ while new_val>current_val
             new_table_ar = table_neighborSM1(current_sol,1);
             for i=1:size(new_table_ar,2)
                 new_sol=new_table_ar(:,i);
-                new_val = Run_Simulation(new_sol);
+                [new_val,outputs] = Run_Simulation(new_sol);
                 if new_val>current_val
                     aux_break=1;
+                    OUTPUT.(['arrangement' char(string(ind))]) = outputs;
+                    Arrangement.(['arrangement' char(string(ind))]) = new_sol;
+                    ind = ind + 1;
                     break
                 end
             end
@@ -48,9 +60,12 @@ while new_val>current_val
              new_table_ar = table_neighborSM2(current_sol,1);
             for i=1:size(new_table_ar,2)
                 new_sol=new_table_ar(:,i);
-                new_val = Run_Simulation(new_sol);
+                [new_val,outputs] = Run_Simulation(new_sol);
                 if new_val>current_val
                     aux_break=1;
+                    OUTPUT.(['arrangement' char(string(ind))]) = outputs;
+                    Arrangement.(['arrangement' char(string(ind))]) = new_sol;
+                    ind = ind + 1;
                     break
                 end
             end
@@ -63,9 +78,12 @@ while new_val>current_val
             new_table_ar = table_neighborSM1(current_sol,0);
             for i=1:size(new_table_ar,2)
                 new_sol=new_table_ar(:,i);
-                new_val = Run_Simulation(new_sol);
+                [new_val,outputs] = Run_Simulation(new_sol);
                 if new_val>current_val
                     aux_break=1;
+                    OUTPUT.(['arrangement' char(string(ind))]) = outputs;
+                    Arrangement.(['arrangement' char(string(ind))]) = new_sol;
+                    ind = ind + 1;
                     break
                 end
             end
@@ -75,9 +93,12 @@ while new_val>current_val
              new_table_ar = table_neighborSM2(current_sol,0);
             for i=1:size(new_table_ar,2)
                 new_sol=new_table_ar(:,i);
-                new_val = Run_Simulation(new_sol);
+                [new_val,outputs] = Run_Simulation(new_sol);
                 if new_val>current_val
                     aux_break=1;
+                    OUTPUT.(['arrangement' char(string(ind))]) = outputs;
+                    Arrangement.(['arrangement' char(string(ind))]) = new_sol;
+                    ind = ind + 1;
                     break
                 end
             end
@@ -90,9 +111,12 @@ while new_val>current_val
             new_table_ar=table_neighborARN(current_sol,0,n);
                 for i=1:size(new_table_ar,2)
                     new_sol=new_table_ar(:,i);
-                    new_val = Run_Simulation(new_sol);
+                    [new_val,outputs] = Run_Simulation(new_sol);
                     if new_val>current_val
                         aux_break=1;
+                        OUTPUT.(['arrangement' char(string(ind))]) = outputs;
+                        Arrangement.(['arrangement' char(string(ind))]) = new_sol;
+                        ind = ind + 1;
                         break
                     end
                 end
@@ -105,9 +129,12 @@ while new_val>current_val
             new_table_ar=table_neighborARN(current_sol,1,n);
                 for i=1:size(new_table_ar,2)
                     new_sol=new_table_ar(:,i);
-                    new_val = Run_Simulation(new_sol);
+                    [new_val,outputs] = Run_Simulation(new_sol);
                     if new_val>current_val
                         aux_break=1;
+                        OUTPUT.(['arrangement' char(string(ind))]) = outputs;
+                        Arrangement.(['arrangement' char(string(ind))]) = new_sol;
+                        ind = ind + 1;
                         break
                     end
                 end

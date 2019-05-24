@@ -1,4 +1,4 @@
-function [final_avg_profit] = Run_Simulation(table_arrangement)
+function [final_avg_profit, outputs] = Run_Simulation(table_arrangement)
 
 %% Program
 scenario = NewDay(table_arrangement);
@@ -36,6 +36,9 @@ while rMSE >= 100 || r < 100
     % Utilization measures (vectors)
     total_seats = [1,2,3,4,5]'.*scenario.arrangement;
     total_tables = ones(1,5)*scenario.arrangement;
+    
+    % Max queue length throughout the day
+    max_queue = max(queues);
 
     if total_seats(1) ~= 0
         mean_util_seats.one(r) = mean(num_busyseats.one / total_seats(1));  
@@ -81,6 +84,8 @@ while rMSE >= 100 || r < 100
         profit_var = 0;
         tot_arrivals_avg=tot_arrivals;
         tot_arrivals_var=0;
+        max_queue_avg = max_queue;
+        max_queue_var = 0;
     else
         [num_admitted_avg, num_admitted_var] = UpdatedStatistics(num_admitted_avg, num_admitted_var, num_admitted, r);
         [num_abandon_avg, num_abandon_var] = UpdatedStatistics(num_abandon_avg, num_abandon_var, num_abandon, r);
@@ -93,6 +98,7 @@ while rMSE >= 100 || r < 100
         [cost_avg, cost_var] = UpdatedStatistics(cost_avg, cost_var, cost, r);
         [profit_avg, profit_var] = UpdatedStatistics(profit_avg, profit_var, profit, r);
         [tot_arrivals_avg, tot_arrivals_var] = UpdatedStatistics(tot_arrivals_avg, tot_arrivals_var, tot_arrivals, r);
+        [max_queue_avg, max_queue_var] = UpdatedStatistics(max_queue_avg, max_queue_var, max_queue, r);
     end
     
     revenue_all(r) = revenue;
@@ -135,6 +141,10 @@ while rMSE >= 100 || r < 100
     tot_arrivals_avg_all(r) = tot_arrivals_avg;
     tot_arrivals_var_all(r) = tot_arrivals_var;
     
+    max_queue_all(r) = max_queue;
+    max_queue_avg_all(r) = max_queue_avg;
+    max_queue_var_all(r) = max_queue_var;
+    
     %% Update Controlled variate:
     [z_avg, z_var, z_all] = ControlledMean(profit_all,tot_arrivals_all,sum(sum(scenario.arrival)));
     z_avg_all(r) = z_avg;
@@ -149,3 +159,24 @@ while rMSE >= 100 || r < 100
     
 end
 final_avg_profit = z_avg_all(end);
+
+% A struct to store all indicators
+outputs.profit_all = z_all;
+outputs.num_admitted_all = num_admitted_all;
+outputs.num_admitted_avg_all = num_admitted_avg_all;
+outputs.num_admitted_var_all = num_admitted_var_all;
+outputs.num_abandon_all = num_abandon_all;
+outputs.num_abandon_avg_all = num_abandon_avg_all;
+outputs.num_abandon_var_all = num_abandon_var_all;
+outputs.odds_abandon_all = odds_abandon_all;
+outputs.odds_abandon_avg_all = odds_abandon_avg_all;
+outputs.odds_abandon_var_all = odds_abandon_var_all;
+outputs.max_waiting_times_all = max_waiting_times_all;
+outputs.max_waiting_times_avg_all = max_waiting_times_avg_all;
+outputs.max_waiting_times_var_all = max_waiting_times_var_all;
+outputs.min_util_tables_all = min_util_tables_all;
+outputs.min_util_tables_avg_all = min_util_tables_avg_all;
+outputs.min_util_tables_var_all = min_util_tables_var_all;
+outputs.max_queue_all = max_queue_all;
+outputs.max_queue_avg_all = max_queue_avg_all;
+outputs.max_queue_var_all = max_queue_var_all;
