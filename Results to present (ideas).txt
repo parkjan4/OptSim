@@ -9,7 +9,7 @@ Need to show how the business runs
 - Number of customer arrivals
 - Number of abandonments
 - Odds of abandonment by customer group size*
-- Number of shared tables*
+- Number of shared occasions by customer group
 - Queue length over time
 - Maximum waiting time (limited only to customers who are admitted)
 *Between arrangement 1 and 2, we will see major differences in profit distribution and odds of abandonment.
@@ -42,4 +42,6 @@ Need to test another seating policy (reservation)
 - Report optimal number of seats (and therefore how much to scale business)
 - Comment on any differences in table arrangement and number of seats
 - Comment on whether seating policy affects our decision on how much to scale the business
+- Odds of abandonments by customer group (compare to the first seating policy)
+- And/or number of admitted groups by customer group (compare to the first seating policy)
 - Reach conclusion about which seating policy is better (higher mean profit)

@@ -11,7 +11,7 @@ while rMSE >= 100 || r < 100
     r = r + 1;
     % Run the simulation
     [customers, tables, times, queues, ...
-        num_busyseats, num_busytables] = DiscreteEventSimulation_Reservation(scenario);
+        num_busyseats, num_busytables, cust_share] = DiscreteEventSimulation_Reservation(scenario);
 
     %% Compute indicators
     % Abandonment/Arrival ratio
@@ -39,6 +39,9 @@ while rMSE >= 100 || r < 100
     
     % Max queue length throughout the day
     max_queue = max(queues);
+    
+    % Mean number of groups who share tables
+    mean_share = mean(cust_share);
 
     if total_seats(1) ~= 0
         mean_util_seats.one(r) = mean(num_busyseats.one / total_seats(1));  
@@ -86,6 +89,8 @@ while rMSE >= 100 || r < 100
         tot_arrivals_var=0;
         max_queue_avg = max_queue;
         max_queue_var = 0;
+        mean_share_avg = mean_share;
+        mean_share_var = 0;
     else
         [num_admitted_avg, num_admitted_var] = UpdatedStatistics(num_admitted_avg, num_admitted_var, num_admitted, r);
         [num_abandon_avg, num_abandon_var] = UpdatedStatistics(num_abandon_avg, num_abandon_var, num_abandon, r);
@@ -99,6 +104,7 @@ while rMSE >= 100 || r < 100
         [profit_avg, profit_var] = UpdatedStatistics(profit_avg, profit_var, profit, r);
         [tot_arrivals_avg, tot_arrivals_var] = UpdatedStatistics(tot_arrivals_avg, tot_arrivals_var, tot_arrivals, r);
         [max_queue_avg, max_queue_var] = UpdatedStatistics(max_queue_avg, max_queue_var, max_queue, r);
+        [mean_share_avg, mean_share_var] = UpdatedStatistics(mean_share_avg, mean_share_var, mean_share, r);
     end
     
     revenue_all(r) = revenue;
@@ -145,6 +151,10 @@ while rMSE >= 100 || r < 100
     max_queue_avg_all(r) = max_queue_avg;
     max_queue_var_all(r) = max_queue_var;
     
+    mean_share_all(r) = mean_share;
+    mean_share_avg_all(r) = mean_share_avg;
+    mean_share_var_all(r) = mean_share_var;
+    
     %% Update Controlled variate:
     [z_avg, z_var, z_all] = ControlledMean(profit_all,tot_arrivals_all,sum(sum(scenario.arrival)));
     z_avg_all(r) = z_avg;
@@ -180,3 +190,6 @@ outputs.min_util_tables_var_all = min_util_tables_var_all;
 outputs.max_queue_all = max_queue_all;
 outputs.max_queue_avg_all = max_queue_avg_all;
 outputs.max_queue_var_all = max_queue_var_all;
+outputs.mean_share_all = mean_share_all;
+outputs.mean_share_avg_all = mean_share_avg_all;
+outputs.mean_share_var_all = mean_share_var_all;

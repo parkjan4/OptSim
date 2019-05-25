@@ -100,16 +100,16 @@ end
 toc                                    % end time
 
 fprintf('The optimal number of seats lies in interval: [%d %d]\n', ak, bk);
-[best_val, ind] = max([-theta_ak -theta_lk -theta_mk -theta_bk]);
+[best_val, indx] = max([-theta_ak -theta_lk -theta_mk -theta_bk]);
 fprintf('Best mean profit found: %d\n', best_val);
 disp('Corresponding table arrangement: ')
-if ind==1
+if indx==1
     disp(problem.ak_SOLUTION');
     fprintf('Number of seats: %d', problem.ak_SOLUTION'*[1;2;3;4;5]);
-elseif ind==2
+elseif indx==2
     disp(problem.lk_SOLUTION');
     fprintf('Number of seats: %d', problem.lk_SOLUTION'*[1;2;3;4;5]);
-elseif ind==3
+elseif indx==3
     disp(problem.mk_SOLUTION');
     fprintf('Number of seats: %d', problem.mk_SOLUTION'*[1;2;3;4;5]);
 else
@@ -177,38 +177,41 @@ end
 toc                                    % end time
 
 fprintf('The optimal number of seats lies in interval: [%d %d]\n', ak, bk);
-[best_val, ind] = max([-theta_ak -theta_lk -theta_mk -theta_bk]);
+[best_val, indx] = max([-theta_ak -theta_lk -theta_mk -theta_bk]);
 fprintf('Best mean profit found: %d\n', best_val);
 disp('Corresponding table arrangement: ')
-if ind==1
+if indx==1
     disp(problem.ak_SOLUTION');
     fprintf('Number of seats: %d', problem.ak_SOLUTION'*[1;2;3;4;5]);
-elseif ind==2
+elseif indx==2
     disp(problem.lk_SOLUTION');
     fprintf('Number of seats: %d', problem.lk_SOLUTION'*[1;2;3;4;5]);
-elseif ind==3
+elseif indx==3
     disp(problem.mk_SOLUTION');
     fprintf('Number of seats: %d', problem.mk_SOLUTION'*[1;2;3;4;5]);
 else
     disp(problem.bk_SOLUTION');
     fprintf('Number of seats: %d', problem.bk_SOLUTION'*[1;2;3;4;5]);
 end
-
+disp(newline)
 disp(ak_all)
 disp(bk_all)
 
 %% Plot objective values over iterations
 % plot the values for each iteration
-vns_values = all_values.run1;
+vns_values = all_values.run3;
 plot(vns_values,'-ko');title('Objective function values over iterations');
 xlabel('Iteration');legend('iteration value');
 
 figure();
-vns_values = all_values.run2;
-plot(vns_values,'-ko');title('Objective function values over iterations');
-xlabel('Iteration');legend('iteration value');
-%%
-figure();
 vns_values = all_values.run4;
 plot(vns_values,'-ko');title('Objective function values over iterations');
 xlabel('Iteration');legend('iteration value');
+
+figure();
+vns_values = all_values.run5;
+plot(vns_values,'-ko');title('Objective function values over iterations');
+xlabel('Iteration');legend('iteration value');
+
+save('OUTPUT_goldenVNS_reservation.mat','OUTPUT')
+save('Arrangement_goldenVNS_reservation.mat','Arrangement')

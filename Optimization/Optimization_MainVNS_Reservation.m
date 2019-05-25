@@ -7,14 +7,14 @@ clc
 % Initialization
 scenario = NewDay([]);
 
-% Struct to store all sub-level structs of results from each Run_Simulation()
+% Struct to store all sub-level structs of results from each Run_Simulation_Reservation()
 OUTPUT = [];
 Arrangement = [];
 
 %% Greedy Search Method - Construction heuristic
 InSeats=200;
 problem.i_SOLUTION = GreedySeats(InSeats, scenario);  % candidate arrangement
-[Profit,outputs] = Run_Simulation(problem.i_SOLUTION);  % profit
+[Profit,outputs] = Run_Simulation_Reservation(problem.i_SOLUTION);  % profit
 
 % Used to collect number of seats investigated
 ak_all = [];
@@ -45,7 +45,7 @@ while new_val>current_val
             new_table_ar = table_neighborSM1(current_sol,1);
             for i=1:size(new_table_ar,2)
                 new_sol=new_table_ar(:,i);
-                [new_val,outputs] = Run_Simulation(new_sol);
+                [new_val,outputs] = Run_Simulation_Reservation(new_sol);
                 if new_val>current_val
                     aux_break=1;
                     OUTPUT.(['arrangement' char(string(ind))]) = outputs;
@@ -60,7 +60,7 @@ while new_val>current_val
              new_table_ar = table_neighborSM2(current_sol,1);
             for i=1:size(new_table_ar,2)
                 new_sol=new_table_ar(:,i);
-                [new_val,outputs] = Run_Simulation(new_sol);
+                [new_val,outputs] = Run_Simulation_Reservation(new_sol);
                 if new_val>current_val
                     aux_break=1;
                     OUTPUT.(['arrangement' char(string(ind))]) = outputs;
@@ -78,7 +78,7 @@ while new_val>current_val
             new_table_ar = table_neighborSM1(current_sol,0);
             for i=1:size(new_table_ar,2)
                 new_sol=new_table_ar(:,i);
-                [new_val,outputs] = Run_Simulation(new_sol);
+                [new_val,outputs] = Run_Simulation_Reservation(new_sol);
                 if new_val>current_val
                     aux_break=1;
                     OUTPUT.(['arrangement' char(string(ind))]) = outputs;
@@ -93,7 +93,7 @@ while new_val>current_val
              new_table_ar = table_neighborSM2(current_sol,0);
             for i=1:size(new_table_ar,2)
                 new_sol=new_table_ar(:,i);
-                [new_val,outputs] = Run_Simulation(new_sol);
+                [new_val,outputs] = Run_Simulation_Reservation(new_sol);
                 if new_val>current_val
                     aux_break=1;
                     OUTPUT.(['arrangement' char(string(ind))]) = outputs;
@@ -111,7 +111,7 @@ while new_val>current_val
             new_table_ar=table_neighborARN(current_sol,0,n);
                 for i=1:size(new_table_ar,2)
                     new_sol=new_table_ar(:,i);
-                    [new_val,outputs] = Run_Simulation(new_sol);
+                    [new_val,outputs] = Run_Simulation_Reservation(new_sol);
                     if new_val>current_val
                         aux_break=1;
                         OUTPUT.(['arrangement' char(string(ind))]) = outputs;
@@ -129,7 +129,7 @@ while new_val>current_val
             new_table_ar=table_neighborARN(current_sol,1,n);
                 for i=1:size(new_table_ar,2)
                     new_sol=new_table_ar(:,i);
-                    [new_val,outputs] = Run_Simulation(new_sol);
+                    [new_val,outputs] = Run_Simulation_Reservation(new_sol);
                     if new_val>current_val
                         aux_break=1;
                         OUTPUT.(['arrangement' char(string(ind))]) = outputs;
@@ -152,5 +152,5 @@ toc                                    % end time
 plot(values,'-ko');title('Objective function values over iterations');
 xlabel('Iteration');legend('iteration value');
 
-save('OUTPUT_baselineVNS_no_reservation.mat','OUTPUT')
-save('Arrangement_baselineVNS_no_reservation.mat','Arrangement')
+save('OUTPUT_baselineVNS_reservation.mat','OUTPUT')
+save('Arrangement_baselineVNS_reservation.mat','Arrangement')
