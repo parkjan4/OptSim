@@ -1,5 +1,5 @@
 function [customers, tables, times, queues, num_busyseats,...
-          num_busytables,num_cust_who_share] = DiscreteEventSimulation(scenario)
+          num_busytables,num_cust_who_share] = DiscreteEventSimulation_Reservation(scenario)
 
 % ============================================================================
 % DESCRIPTION
