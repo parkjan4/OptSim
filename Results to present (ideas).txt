@@ -1,0 +1,45 @@
+SIMULATION
+----------
+* Show results for two arrangements (200 seats)
+1. [0 0 0 0 40]
+2. [0 37 15 10 8]
+Need to show how the business runs
+- Distribution of profit*
+- Show the average profit curve and its variance curve (mainly to demonstrate that they converge)
+- Number of customer arrivals
+- Number of abandonments
+- Odds of abandonment by customer group size*
+- Number of shared tables*
+- Queue length over time
+- Maximum waiting time (limited only to customers who are admitted)
+*Between arrangement 1 and 2, we will see major differences in profit distribution and odds of abandonment.
+*For example, arrangement 1 minimizes abandonment (at least very close to it) but its mean profit is lower than arrangement 2.
+*Arrangement 2 has considerably higher odds of abandonment, but the business is more profitable most likely due to less occasions of sharing tables.
+
+****************************
+
+TRANSITION TO OPTIMIZATION
+---------------------------
+1) Need to optimize table arrangement 
+2) Need to know how much to scale up the business 
+3) Try other seating policies
+
+****************************
+
+OPTIMIZATION
+------------
+Need to compare baseline VNS vs. golden section VNS:
+- Comparison of profit_all distributions (overlay)
+- Report optimal table arrangement
+- Report optimal number of seats (and therefore how much to scale business)
+- Golden section VNS: 
+- Comment on any differences in table arrangement and number of seats
+- Reach conclusion about which approach is better (higher mean profit)
+
+Need to test another seating policy (reservation)
+- Objective: comparison of profit_all distributions (overlay) just using golden section VNS
+- Report optimal table arrangement
+- Report optimal number of seats (and therefore how much to scale business)
+- Comment on any differences in table arrangement and number of seats
+- Comment on whether seating policy affects our decision on how much to scale the business
+- Reach conclusion about which seating policy is better (higher mean profit)

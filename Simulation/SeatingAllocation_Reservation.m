@@ -55,7 +55,7 @@ function [assignedIDs, newCustomers, newTables] = ...
 
 % Take the input for the group size to reserve the tables
 
-reservedgroup_size = 2;
+reservedgroup_size = 5;
 
 assignedIDs = [];
 newCustomers=oldCustomers;
