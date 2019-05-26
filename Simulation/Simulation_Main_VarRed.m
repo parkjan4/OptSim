@@ -13,7 +13,7 @@ table_arrangement2 = [0;50;0;0;20];
 table_arrangement3 = [19;28;15;10;8];
 table_arrangement4 = [0;25;15;10;18];
 
-scenario = NewDay(table_arrangement4);
+scenario = NewDay(table_arrangement1);
 
 groupsize_abandoned = [];
 groupsize_admitted = [];
