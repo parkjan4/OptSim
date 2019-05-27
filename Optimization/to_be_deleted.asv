@@ -43,4 +43,4 @@ l2=line([mean(data_g) mean(data_g)], ylim,'Color','b','LineStyle','--','LineWidt
 legend([h1 h2 l1 l2],'Baseline','Golden Section','Mean of baseline solution','Mean of golden section solution')
 ylabel('Frequency')
 xlabel('Profit [$]')
-title('Comparison of profit distribution using baseline vs. golden section VNS')
+title('Comparison of profit distribution using Golden Section VNS under two Seating Policies')

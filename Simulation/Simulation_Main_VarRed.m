@@ -12,8 +12,9 @@ table_arrangement1 = [0;0;0;0;40];
 table_arrangement2 = [0;50;0;0;20];
 table_arrangement3 = [0;37;15;10;8];
 table_arrangement4 = [0;25;15;10;18];
+arrangement = [0; 21; 15; 13; 13];
 
-scenario = NewDay(table_arrangement1);
+scenario = NewDay(arrangement);
 
 groupsize_abandoned = [];
 groupsize_admitted = [];
@@ -217,7 +218,7 @@ xlabel('Number of Simulations');
 ylabel('US Dollars');
 legend('Revenue', 'Cost', 'Profit');
 
-% Histogram of profits (worst case, 5th, mean, 95th)
+%% Histogram of profits (worst case, 5th, mean, 95th)
 
 
 plotHistogram(revenue_avg_all, false);
