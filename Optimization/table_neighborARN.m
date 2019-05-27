@@ -59,6 +59,9 @@ if sum(rest>0)
     new_table_ar(:,rest>0)=[];
     new_table_ar(:,end+1)=[-1;-1;-1;-1;-1];
 end
+tot_seats=sum(new_table_ar.*(1:5)',1);
+new_table_ar(:,tot_seats<200)=repmat([-1;-1;-1;-1;-1],1,size(new_table_ar(:,tot_seats<200),2));
+new_table_ar=unique(new_table_ar','rows')';
 
 end
 
