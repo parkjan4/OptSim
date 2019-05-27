@@ -1,8 +1,10 @@
 SIMULATION
 ----------
-* Show results for two arrangements (200 seats)
-1. [0 0 0 0 40]
-2. [0 37 15 10 8]
+* Show results for three arrangements (200 seats)
+1. [0 0 0 0 40] --> given
+2. [0 50 0 0 20] --> given
+2. [0 37 15 10 8] --> our preference
+
 Need to show how the business runs
 - Distribution of profit*
 - Show the average profit curve and its variance curve (mainly to demonstrate that they converge)
