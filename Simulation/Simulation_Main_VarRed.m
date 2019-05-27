@@ -14,7 +14,7 @@ table_arrangement3 = [0;37;15;10;8];
 table_arrangement4 = [0;25;15;10;18];
 arrangement = [0; 21; 15; 13; 13];
 
-scenario = NewDay(arrangement);
+scenario = NewDay(table_arrangement1);
 
 groupsize_abandoned = [];
 groupsize_admitted = [];
