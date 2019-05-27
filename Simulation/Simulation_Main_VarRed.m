@@ -10,10 +10,10 @@ tic;                                    % start time
 % Set the scenario
 table_arrangement1 = [0;0;0;0;40];
 table_arrangement2 = [0;50;0;0;20];
-table_arrangement3 = [19;28;15;10;8];
+table_arrangement3 = [0;37;15;10;8];
 table_arrangement4 = [0;25;15;10;18];
 
-scenario = NewDay(table_arrangement4);
+scenario = NewDay(table_arrangement1);
 
 groupsize_abandoned = [];
 groupsize_admitted = [];
@@ -23,7 +23,7 @@ while rMSE >= 100 || r < 100
     r = r + 1;
     % Run the simulation
     [customers, tables, times, queues, ...
-        num_busyseats, num_busytables] = DiscreteEventSimulation(scenario);
+        num_busyseats, num_busytables, cust_share] = DiscreteEventSimulation(scenario);
 
     %% Compute indicators
     % Abandonment/Arrival ratio
@@ -48,6 +48,9 @@ while rMSE >= 100 || r < 100
     % Utilization measures (vectors)
     total_seats = [1,2,3,4,5]'.*scenario.arrangement;
     total_tables = ones(1,5)*scenario.arrangement;
+    
+    % Mean number of groups who share tables
+    mean_share = mean(cust_share);
 
     if total_seats(1) ~= 0
         mean_util_seats.one(r) = mean(num_busyseats.one / total_seats(1));  
@@ -93,6 +96,8 @@ while rMSE >= 100 || r < 100
         profit_var = 0;
         tot_arrivals_avg=tot_arrivals;
         tot_arrivals_var=0;
+        mean_share_avg = mean_share;
+        mean_share_var = 0;
     else
         [num_admitted_avg, num_admitted_var] = UpdatedStatistics(num_admitted_avg, num_admitted_var, num_admitted, r);
         [num_abandon_avg, num_abandon_var] = UpdatedStatistics(num_abandon_avg, num_abandon_var, num_abandon, r);
@@ -105,6 +110,7 @@ while rMSE >= 100 || r < 100
         [cost_avg, cost_var] = UpdatedStatistics(cost_avg, cost_var, cost, r);
         [profit_avg, profit_var] = UpdatedStatistics(profit_avg, profit_var, profit, r);
         [tot_arrivals_avg, tot_arrivals_var] = UpdatedStatistics(tot_arrivals_avg, tot_arrivals_var, tot_arrivals, r);
+        [mean_share_avg, mean_share_var] = UpdatedStatistics(mean_share_avg, mean_share_var, mean_share, r);
     end
     
     revenue_all(r) = revenue;
@@ -146,6 +152,10 @@ while rMSE >= 100 || r < 100
     tot_arrivals_all(r) = tot_arrivals;
     tot_arrivals_avg_all(r) = tot_arrivals_avg;
     tot_arrivals_var_all(r) = tot_arrivals_var;
+    
+    mean_share_all(r) = mean_share;
+    mean_share_avg_all(r) = mean_share_avg;
+    mean_share_var_all(r) = mean_share_var;
     
     %% Update Controlled variate:
     [z_avg, z_var, z_all] = ControlledMean(profit_all,tot_arrivals_all,sum(scenario.arrival,'all'));
@@ -209,12 +219,15 @@ legend('Revenue', 'Cost', 'Profit');
 
 % Histogram of profits (worst case, 5th, mean, 95th)
 
-title('Distribution of Revenue');
+
 plotHistogram(revenue_avg_all, false);
-title('Distribution of Profit');
+title('Distribution of Revenue');
+
 plotHistogram(profit_avg_all, false);
-title('Distribution of Cost');
+title('Distribution of Profit');
+
 plotHistogram(cost_avg_all, true);
+title('Distribution of Cost');
 
 %% Group size distribution among customers who abandoned
 figure;
@@ -274,6 +287,11 @@ title('Average overtime in hours');
 plotHistogram(overtime_all, true);
 title('Distribution of overtime in hours');
 xlabel('Overtime [hours]');
+
+%% Sharing
+plotHistogram(mean_share_all, true);
+title('Distribution of mean number of customers who share tables')
+xlabel('Number of customer groups')
 
 %% Distribution of mean utilization of seats
 % plotHistogram(mean_util_seats.one, false);

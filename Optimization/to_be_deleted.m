@@ -1,13 +1,13 @@
 clear all; clc;
-load('saved_data/OUTPUT_baselineVNS_no_reservation.mat')
-load('saved_data/Arrangement_baselineVNS_no_reservation.mat')
-%load('saved_data/OUTPUT_goldenVNS_no_reservation.mat')
-%load('saved_data/Arrangement_goldenVNS_no_reservation.mat')
+%load('saved_data/OUTPUT_baselineVNS_no_reservation.mat')
+%load('saved_data/Arrangement_baselineVNS_no_reservation.mat')
+load('saved_data/OUTPUT_goldenVNS_no_reservation.mat')
+load('saved_data/Arrangement_goldenVNS_no_reservation.mat')
 OUTPUT_baseline = OUTPUT;
 ARR_baseline = Arrangement;
 
-load('saved_data/OUTPUT_goldenVNS_no_reservation.mat')
-load('saved_data/Arrangement_goldenVNS_no_reservation.mat')
+load('saved_data/OUTPUT_goldenVNS_reservation.mat')
+load('saved_data/Arrangement_goldenVNS_reservation.mat')
 OUTPUT_gVNS = OUTPUT;
 ARR_gVNS = Arrangement;
 
@@ -29,16 +29,17 @@ for i=1:12
 end
 [~,b2] = max(Y) %b=9
 %%
-data_b = OUTPUT_baseline.arrangement11.profit_all;
-data_g = OUTPUT_gVNS.arrangement9.profit_all;
+close all
+data_b = OUTPUT_baseline.arrangement9.odds_abandon;
+data_g = OUTPUT_gVNS.arrangement10.num_admitted_all;
 figure;
-h1=histogram(data_b,15);
+h1=histogram(data_b,15,'FaceColor','r','FaceAlpha',0.4);
 hold on;
-h2=histogram(data_g,13);
+h2=histogram(data_g,16,'FaceColor','b','FaceAlpha',0.3);
 ylim=get(gca,'ylim');
-l1=line([mean(data_b) mean(data_b)], ylim,'Color','b','LineStyle','--','LineWidth',2.0); 
-l2=line([mean(data_g) mean(data_g)], ylim,'Color','y','LineStyle','--','LineWidth',2.0); 
-legend([h1 h2 l1 l2],'Baseline VNS','Golden Section VNS','Mean Baseline VNS','Mean Golden Section VNS')
+l1=line([mean(data_b) mean(data_b)], ylim,'Color','r','LineStyle','--','LineWidth',2.0); 
+l2=line([mean(data_g) mean(data_g)], ylim,'Color','b','LineStyle','--','LineWidth',2.0); 
+legend([h1 h2 l1 l2],'Seating Policy 1','Seating Policy 2','Mean of Seating Policy 1)','Mean of Seating Policy 2')
 ylabel('Frequency')
 xlabel('Profit [$]')
-title('Comparison of profit distribution')
+title('Comparison of profit distribution using Golden Section VNS under two Seating Policies')
