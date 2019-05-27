@@ -7,7 +7,8 @@ groupsize_abandoned = [];
 groupsize_admitted = [];
 rMSE = inf; % initial value
 r = 0;
-while rMSE >= 100 || r < 100
+%while rMSE >= 100 || r < 100
+while r < 1000
     r = r + 1;
     % Run the simulation
     [customers, tables, times, queues, ...
