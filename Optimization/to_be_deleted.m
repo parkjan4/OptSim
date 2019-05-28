@@ -47,7 +47,8 @@ title('Comparison of profit distribution using baseline vs. golden section VNS')
 
 %% Scatter points (4)
 close all
-X = [98.76 91.17 95.06 95.33];
+
+X = [100-98.76 100-91.17 100-95.06 100-95.33];
 Y = [6.5 1.1 1.11 1.3];
 Y_ = [11419 12238 mean(OUTPUT_baseline.arrangement9.profit_all) mean(OUTPUT_gVNS.arrangement10.profit_all)]; 
 scatter(X,Y,'filled')
@@ -56,6 +57,6 @@ scatter(X,Y,'filled')
 %text(X(3)+0.00075,Y(3)-50,"Golden Section VNS (policy 1)")
 %text(X(4)+0.00125,Y(4)+50,"Golden Section VNS (policy 2)")
 ylabel('Avg. # customers who share tables')
-xlabel('Avg. % Admissions')
-title('Number of Shared Occasions vs. % Admissions')
+xlabel('Avg. % abandonments')
+title('Number of Shared Occasions vs. % Abandonments')
 %text(X(1:end-1),Y,{"Naive Solution","Greedy Solution","Golden Section VNS (policy 1)","Golden Section VNS (policy 2)"})
