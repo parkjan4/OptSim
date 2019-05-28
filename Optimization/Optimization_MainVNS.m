@@ -2,7 +2,7 @@ clear all
 close all
 clc
 
-%% Optimization by Golden Section Method (minimize negative mean profit)
+%% Optimization by Baseline VNS:
 
 % Initialization
 scenario = NewDay([]);
@@ -12,7 +12,7 @@ OUTPUT = [];
 Arrangement = [];
 
 %% Greedy Search Method - Construction heuristic
-InSeats=300;
+InSeats=200;
 problem.i_SOLUTION = GreedySeats(InSeats, scenario);  % candidate arrangement
 [Profit,outputs] = Run_Simulation(problem.i_SOLUTION);  % profit
 
