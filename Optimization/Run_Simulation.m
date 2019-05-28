@@ -1,5 +1,11 @@
 function [final_avg_profit, outputs] = Run_Simulation(table_arrangement)
 
+if isequal(table_arrangement,[-1;-1;-1;-1;-1])
+    final_avg_profit=0;
+    outputs=[];
+    return
+end
+
 %% Program
 scenario = NewDay(table_arrangement);
 

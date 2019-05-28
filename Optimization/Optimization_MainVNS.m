@@ -12,7 +12,7 @@ OUTPUT = [];
 Arrangement = [];
 
 %% Greedy Search Method - Construction heuristic
-InSeats=200;
+InSeats=300;
 problem.i_SOLUTION = GreedySeats(InSeats, scenario);  % candidate arrangement
 [Profit,outputs] = Run_Simulation(problem.i_SOLUTION);  % profit
 
